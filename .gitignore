@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+#Archivos de usuario
+.env
+historias-de-usuario.md
+.env.local

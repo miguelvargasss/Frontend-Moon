@@ -4,6 +4,7 @@ import { loginSchema, type LoginFormData } from '../../application/login.schema'
 import { useAuth } from '../../application/use-auth.hook';
 import Input from '../../../../shared/components/Input';
 import Button from '../../../../shared/components/Button';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
@@ -15,6 +16,8 @@ interface LoginFormProps {
  */
 export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const { login, isLoading, error, clearError } = useAuth();
+
+  const navigate = useNavigate();
 
   const {
     register,
@@ -29,6 +32,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     clearError();
     try {
       await login(data.email, data.password);
+      navigate('/');
       // Redirección se manejará por el router/store
     } catch {
       // Error ya se muestra vía el store
