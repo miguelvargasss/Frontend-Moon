@@ -1,0 +1,390 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MoonPhases — Auth Page Styles
+   Login/Register con glassmorphism, luna 3D y transición animada
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Page Container ───────────────────────────────────────────────── */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-4);
+}
+
+/* ── Animated Star Background ─────────────────────────────────────── */
+.auth-stars {
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(45, 212, 168, 0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 60%, rgba(45, 212, 168, 0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 10%, rgba(255, 255, 255, 0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 40%, rgba(45, 212, 168, 0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 80%, rgba(255, 255, 255, 0.25) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 15% 75%, rgba(45, 212, 168, 0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 85%, rgba(255, 255, 255, 0.2) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 65% 15%, rgba(45, 212, 168, 0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 55%, rgba(255, 255, 255, 0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 35%, rgba(45, 212, 168, 0.15) 0%, transparent 100%);
+  animation: twinkle 8s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.auth-stars-2 {
+  animation-delay: -4s;
+  animation-duration: 12s;
+  opacity: 0.5;
+  transform: scale(1.5) rotate(30deg);
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.5; }
+}
+
+/* ── Main Container ───────────────────────────────────────────────── */
+.auth-container {
+  width: 100%;
+  max-width: 1100px;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 620px;
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    0 0 80px rgba(45, 212, 168, 0.05);
+}
+
+/* ── Panels ───────────────────────────────────────────────────────── */
+.auth-panel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-panel-branding {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(45, 212, 168, 0.08) 0%, transparent 60%),
+    linear-gradient(160deg, var(--bg-secondary), var(--bg-primary));
+  overflow: hidden;
+}
+
+.auth-panel-form {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ── Glass Card (form wrapper) ────────────────────────────────────── */
+.auth-form-glass {
+  width: 100%;
+  padding: var(--space-10) var(--space-8);
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* ── Branding Panel ───────────────────────────────────────────────── */
+.branding-panel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-8);
+}
+
+.branding-moon {
+  position: absolute;
+  inset: 0;
+  opacity: 0.9;
+}
+
+.moon-scene-container {
+  width: 100%;
+  height: 100%;
+}
+
+.branding-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+/* Logo */
+.branding-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.branding-logo-icon {
+  display: flex;
+  filter: drop-shadow(0 0 10px rgba(45, 212, 168, 0.4));
+}
+
+.branding-logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.branding-logo-moon {
+  font-family: var(--font-display);
+  font-size: var(--font-size-4xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.branding-logo-phases {
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  font-weight: 400;
+  color: var(--accent-primary);
+  letter-spacing: 0.2em;
+  text-transform: lowercase;
+}
+
+.branding-slogan {
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  font-weight: 500;
+  color: var(--text-primary);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.branding-slogan em {
+  font-style: italic;
+}
+
+.branding-description {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+/* Category badges */
+.branding-categories {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.branding-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--accent-primary);
+  background: rgba(45, 212, 168, 0.06);
+  border: 1px solid rgba(45, 212, 168, 0.12);
+  border-radius: var(--radius-full);
+  transition:
+    background var(--transition-base),
+    border-color var(--transition-base),
+    transform var(--transition-fast);
+  letter-spacing: 0.02em;
+}
+
+.branding-badge:hover {
+  background: rgba(45, 212, 168, 0.12);
+  border-color: rgba(45, 212, 168, 0.25);
+  transform: translateY(-1px);
+}
+
+.branding-badge-icon {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* Moon phases strip — SVG dots */
+.branding-phases {
+  position: absolute;
+  bottom: var(--space-6);
+  display: flex;
+  gap: var(--space-3);
+  z-index: 2;
+  align-items: center;
+}
+
+.branding-phase-dot {
+  display: flex;
+  opacity: 0;
+  animation: fadeInPhase 0.5s ease-out forwards;
+}
+
+@keyframes fadeInPhase {
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── Form Styles ──────────────────────────────────────────────────── */
+.auth-form-header {
+  margin-bottom: var(--space-8);
+}
+
+.auth-form-title {
+  font-family: var(--font-display);
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+  line-height: 1.2;
+}
+
+.auth-form-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.auth-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+/* API error message */
+.auth-form-api-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--error);
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  border-radius: var(--radius-md);
+  animation: shake 0.3s ease-in-out;
+}
+
+/* Switch login/register link */
+.auth-form-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.auth-form-switch-btn {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--accent-primary);
+  padding: 0;
+  transition: color var(--transition-fast);
+}
+
+.auth-form-switch-btn:hover {
+  color: var(--accent-secondary);
+  text-decoration: underline;
+}
+
+/* Success state */
+.auth-success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 auto var(--space-4);
+  box-shadow: 0 0 30px var(--accent-glow);
+  animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .auth-panel-branding {
+    display: none;
+  }
+
+  .auth-panel-form {
+    min-height: 100vh;
+    border-radius: 0;
+  }
+
+  .auth-form-glass {
+    padding: var(--space-8) var(--space-6);
+  }
+
+  .auth-page {
+    padding: 0;
+  }
+
+  .auth-container {
+    max-width: 100%;
+  }
+
+  .auth-layout {
+    border-radius: 0;
+    border: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-form-glass {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .auth-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-form-title {
+    font-size: var(--font-size-xl);
+  }
+}
