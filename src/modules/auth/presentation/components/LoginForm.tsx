@@ -32,8 +32,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     clearError();
     try {
       await login(data.email, data.password);
-      navigate('/');
-      // Redirección se manejará por el router/store
+      navigate('/', { replace: true });
     } catch {
       // Error ya se muestra vía el store
     }
