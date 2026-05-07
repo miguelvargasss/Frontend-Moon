@@ -57,10 +57,11 @@ apiClient.interceptors.response.use(
 
           return apiClient(originalRequest);
         } catch {
-          // Refresh falló — limpiar tokens y redirigir a login
+          // Refresh falló — limpiar tokens
+          // No redirigir con window.location.href para evitar reload completo
           localStorage.removeItem('mp_access_token');
           localStorage.removeItem('mp_refresh_token');
-          window.location.href = '/login';
+          localStorage.removeItem('mp_user');
         }
       }
     }
