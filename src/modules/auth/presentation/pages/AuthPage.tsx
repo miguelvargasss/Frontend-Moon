@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
 import BrandingPanel from '../components/BrandingPanel';
-import '../styles/auth-page.css';
 
 /**
  * Página de autenticación con transición animada Login ↔ Register.
@@ -11,9 +10,6 @@ import '../styles/auth-page.css';
  * Layout:
  * - LOGIN:    [Branding | LoginForm]     (branding izquierda, form derecha)
  * - REGISTER: [RegisterForm | Branding]  (form izquierda, branding derecha)
- *
- * La transición se logra invirtiendo el orden de los paneles con
- * Framer Motion AnimatePresence.
  */
 export default function AuthPage() {
   const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -22,17 +18,17 @@ export default function AuthPage() {
   const switchToLogin = () => setMode('login');
 
   return (
-    <div className="auth-page">
+    <div className="relative min-h-screen overflow-hidden bg-moon-bg">
       {/* Fondo de estrellas sutil */}
       <div className="auth-stars" />
       <div className="auth-stars auth-stars-2" />
 
-      <div className="auth-container">
+      <div className="relative z-10 flex min-h-screen items-center justify-center p-4">
         <AnimatePresence mode="wait">
           {mode === 'login' ? (
             <motion.div
               key="login-layout"
-              className="auth-layout"
+              className="flex w-full max-w-[900px] overflow-hidden rounded-2xl border border-[--glass-border] shadow-2xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -40,7 +36,7 @@ export default function AuthPage() {
             >
               {/* Login: Branding a la izquierda */}
               <motion.div
-                className="auth-panel auth-panel-branding"
+                className="relative hidden w-1/2 overflow-hidden bg-moon-bg-secondary md:block"
                 initial={{ x: 60, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
@@ -50,12 +46,12 @@ export default function AuthPage() {
 
               {/* Login: Form a la derecha */}
               <motion.div
-                className="auth-panel auth-panel-form"
+                className="flex w-full items-center justify-center bg-[--glass-bg] p-8 backdrop-blur-xl md:w-1/2 md:p-10"
                 initial={{ x: -60, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.1, ease: [0.34, 1.56, 0.64, 1] }}
               >
-                <div className="auth-form-glass">
+                <div className="w-full max-w-sm">
                   <LoginForm onSwitchToRegister={switchToRegister} />
                 </div>
               </motion.div>
@@ -63,7 +59,7 @@ export default function AuthPage() {
           ) : (
             <motion.div
               key="register-layout"
-              className="auth-layout"
+              className="flex w-full max-w-[900px] overflow-hidden rounded-2xl border border-[--glass-border] shadow-2xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -71,19 +67,19 @@ export default function AuthPage() {
             >
               {/* Register: Form a la izquierda */}
               <motion.div
-                className="auth-panel auth-panel-form"
+                className="flex w-full items-center justify-center bg-[--glass-bg] p-8 backdrop-blur-xl md:w-1/2 md:p-10"
                 initial={{ x: 60, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
               >
-                <div className="auth-form-glass">
+                <div className="w-full max-w-sm">
                   <RegisterForm onSwitchToLogin={switchToLogin} />
                 </div>
               </motion.div>
 
               {/* Register: Branding a la derecha */}
               <motion.div
-                className="auth-panel auth-panel-branding"
+                className="relative hidden w-1/2 overflow-hidden bg-moon-bg-secondary md:block"
                 initial={{ x: -60, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.1, ease: [0.34, 1.56, 0.64, 1] }}

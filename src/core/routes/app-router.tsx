@@ -1,11 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import MainLayout from '../../shared/layouts/MainLayout';
 import { useAuthStore } from '../../modules/auth/application/auth.store';
 import type { ReactNode } from 'react';
 
 // Lazy load de páginas para optimizar el bundle inicial
 const ShopPage = lazy(() => import('../../modules/shop/presentation/pages/ShopPage'));
+const ProductDetailPage = lazy(() => import('../../modules/shop/presentation/pages/ProductDetailPage'));
+const CartPage = lazy(() => import('../../modules/cart/presentation/pages/CartPage'));
 const AuthPage = lazy(() => import('../../modules/auth/presentation/pages/AuthPage'));
 
 // Admin — lazy load
@@ -19,10 +21,19 @@ const CouponsAdminPage = lazy(() => import('../../modules/admin/presentation/pag
 
 /**
  * Guard que protege rutas exclusivas para administradores.
- * Si el usuario no está autenticado o no tiene rol admin, redirige a /.
+ * Espera a que la sesión se restaure antes de decidir.
  */
 function AdminGuard({ children }: { children: ReactNode }) {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, isRestoring } = useAuthStore();
+
+  // Mientras se restaura la sesión, mostrar loader
+  if (isRestoring) {
+    return (
+      <div className="app-loader">
+        <div className="loader-moon" />
+      </div>
+    );
+  }
 
   if (!isAuthenticated || user?.role !== 'admin') {
     return <Navigate to="/" replace />;
@@ -36,6 +47,8 @@ function AdminGuard({ children }: { children: ReactNode }) {
  *
  * Rutas públicas:
  *   / → Tienda (landing)
+ *   /producto/:id → Detalle de producto
+ *   /carrito → Carrito de compras
  *   /login → Login / Register (sin navbar)
  *
  * Rutas protegidas:
@@ -51,6 +64,13 @@ function AdminGuard({ children }: { children: ReactNode }) {
  *   /admin/cupones → Gestión de cupones
  */
 export default function AppRouter() {
+  const restoreSession = useAuthStore((s) => s.restoreSession);
+
+  // Restaurar sesión al cargar la app
+  useEffect(() => {
+    restoreSession();
+  }, [restoreSession]);
+
   return (
     <BrowserRouter>
       <Suspense
@@ -64,6 +84,8 @@ export default function AppRouter() {
           {/* Rutas con Navbar (MainLayout) */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<ShopPage />} />
+            <Route path="/producto/:id" element={<ProductDetailPage />} />
+            <Route path="/carrito" element={<CartPage />} />
             {/* Futuras rutas protegidas aquí */}
           </Route>
 

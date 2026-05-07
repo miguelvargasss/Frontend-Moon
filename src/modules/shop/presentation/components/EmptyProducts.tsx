@@ -4,9 +4,8 @@
  */
 export default function EmptyProducts() {
   return (
-    <div className="empty-products" id="empty-products">
-      {/* Luna SVG */}
-      <div className="empty-products-icon">
+    <div className="flex flex-col items-center gap-4 py-12 text-center" id="empty-products">
+      <div className="opacity-60 animate-[floatMoon_4s_ease-in-out_infinite]">
         <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
           <circle cx="32" cy="32" r="28" stroke="rgba(45,212,168,0.2)" strokeWidth="1" />
           <path
@@ -16,9 +15,8 @@ export default function EmptyProducts() {
           <circle cx="32" cy="32" r="20" stroke="rgba(45,212,168,0.1)" strokeWidth="0.5" />
         </svg>
       </div>
-
-      <h3 className="empty-products-title">No encontramos productos</h3>
-      <p className="empty-products-subtitle">
+      <h3 className="font-display text-xl font-semibold text-foreground">No encontramos productos</h3>
+      <p className="text-sm text-default-500 leading-relaxed">
         Pronto tendremos productos increíbles para ti.
         <br />
         Vuelve a visitarnos.
