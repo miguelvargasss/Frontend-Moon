@@ -9,6 +9,9 @@ const ShopPage = lazy(() => import('../../modules/shop/presentation/pages/ShopPa
 const ProductDetailPage = lazy(() => import('../../modules/shop/presentation/pages/ProductDetailPage'));
 const CartPage = lazy(() => import('../../modules/cart/presentation/pages/CartPage'));
 const AuthPage = lazy(() => import('../../modules/auth/presentation/pages/AuthPage'));
+const CheckoutPage = lazy(() => import('../../modules/checkout/presentation/pages/CheckoutPage'));
+const ProfilePage = lazy(() => import('../../modules/profile/presentation/pages/ProfilePage'));
+const MyOrdersPage = lazy(() => import('../../modules/orders/presentation/pages/MyOrdersPage'));
 
 // Admin — lazy load
 const AdminLayout = lazy(() => import('../../shared/layouts/AdminLayout'));
@@ -37,6 +40,27 @@ function AdminGuard({ children }: { children: ReactNode }) {
 
   if (!isAuthenticated || user?.role !== 'admin') {
     return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+/**
+ * Guard que protege rutas para usuarios autenticados.
+ */
+function UserGuard({ children }: { children: ReactNode }) {
+  const { isAuthenticated, isRestoring } = useAuthStore();
+
+  if (isRestoring) {
+    return (
+      <div className="app-loader">
+        <div className="loader-moon" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
   }
 
   return <>{children}</>;
@@ -86,7 +110,23 @@ export default function AppRouter() {
             <Route path="/" element={<ShopPage />} />
             <Route path="/producto/:id" element={<ProductDetailPage />} />
             <Route path="/carrito" element={<CartPage />} />
-            {/* Futuras rutas protegidas aquí */}
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route 
+              path="/mi-cuenta" 
+              element={
+                <UserGuard>
+                  <ProfilePage />
+                </UserGuard>
+              } 
+            />
+            <Route 
+              path="/mis-pedidos" 
+              element={
+                <UserGuard>
+                  <MyOrdersPage />
+                </UserGuard>
+              } 
+            />
           </Route>
 
           {/* Rutas sin Navbar */}

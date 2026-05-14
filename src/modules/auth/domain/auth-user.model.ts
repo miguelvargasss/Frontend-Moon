@@ -5,4 +5,5 @@ export interface AuthUser {
   name: string;
   lastName: string;
   role: 'admin' | 'comprador';
+  points?: number;
 }

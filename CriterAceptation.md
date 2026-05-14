@@ -3,7 +3,6 @@
 Dentro de este archivo se definen los criterios de aceptación de la aplicación.
 
 * Todos los cambios que se realicen en el código deben seguir los criterios de aceptación.
-* No se debe tocar el archivo front-MoonP/.env
 * Seguir los estandares de codigo establecidos en el archivo .eslintrc.cjs
 
 ### Cuando crear una rama

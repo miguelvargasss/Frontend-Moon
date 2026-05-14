@@ -3,6 +3,7 @@ export interface ProductImage {
   id: string;
   url: string;
   productId: string;
+  variantId?: string;
 }
 
 /** Variante de producto */
@@ -12,6 +13,8 @@ export interface ProductVariant {
   color?: string;
   stock: number;
   priceOverride?: number;
+  sku?: string;
+  images?: ProductImage[];
 }
 
 /**

@@ -14,7 +14,7 @@ export default function ShopPage() {
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { products, loading, error, searchProducts } = useProducts();
+  const { products, loading, error } = useProducts();
   const { categories } = useCategories();
 
   const filteredProducts = useMemo(() => {
@@ -32,7 +32,7 @@ export default function ShopPage() {
     }
 
     return result;
-  }, [products, activeCategoryId, searchTerm, searchProducts]);
+  }, [products, activeCategoryId, searchTerm]);
 
   const getCategoryName = (categoryId?: string) =>
     categories.find((c) => c.id === categoryId)?.name;

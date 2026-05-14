@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { isAxiosError } from 'axios';
 import type { AuthUser } from '../domain/auth-user.model';
 import { authApiRepository } from '../infrastructure/auth-api.repository';
 import { tokenStorage } from '../infrastructure/token-storage.service';
@@ -28,6 +29,8 @@ interface AuthState {
   logout: () => Promise<void>;
   /** Restaurar la sesión al cargar la app (rehydrate user desde token) */
   restoreSession: () => Promise<void>;
+  /** Refrescar perfil desde backend (p.ej. tras ganar MoonPoints) */
+  refreshProfile: () => Promise<void>;
   /** Limpiar error */
   clearError: () => void;
 }
@@ -65,9 +68,9 @@ export const useAuthStore = create<AuthState>((set) => ({
         isAuthenticated: true,
         isLoading: false,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       const message =
-        err.response?.data?.message ?? 'Error al iniciar sesión';
+        isAxiosError(err) ? err.response?.data?.message : 'Error al iniciar sesión';
       set({ error: message, isLoading: false });
       throw err;
     }
@@ -78,9 +81,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       await authApiRepository.register(email, password, name, lastName);
       set({ isLoading: false });
-    } catch (err: any) {
+    } catch (err: unknown) {
       const message =
-        err.response?.data?.message ?? 'Error al registrarse';
+        isAxiosError(err) ? err.response?.data?.message : 'Error al registrarse';
       set({ error: message, isLoading: false });
       throw err;
     }
@@ -137,7 +140,8 @@ export const useAuthStore = create<AuthState>((set) => ({
         email: profile.email,
         name: profile.name,
         lastName: profile.lastName,
-        role: (profile as any).role ?? 'comprador',
+        role: profile.role ?? 'comprador',
+        points: profile.points,
       };
       tokenStorage.saveUser(user);
       set({
@@ -149,6 +153,26 @@ export const useAuthStore = create<AuthState>((set) => ({
       // Token inválido — limpiar todo
       tokenStorage.clear();
       set({ user: null, isAuthenticated: false, isRestoring: false });
+    }
+  },
+
+  refreshProfile: async () => {
+    if (!tokenStorage.hasTokens()) return;
+    try {
+      const profile = await authApiRepository.getProfile();
+      const current = tokenStorage.getUser();
+      const merged: AuthUser = {
+        id: profile.id,
+        email: profile.email,
+        name: profile.name,
+        lastName: profile.lastName,
+        role: profile.role ?? current?.role ?? 'comprador',
+        points: profile.points,
+      };
+      tokenStorage.saveUser(merged);
+      set({ user: merged });
+    } catch {
+      // Silencioso: no romper UX si falla
     }
   },
 
