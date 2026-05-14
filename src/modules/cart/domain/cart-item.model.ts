@@ -4,8 +4,11 @@ export interface CartItem {
   userId: string;
   productId: string;
   quantity: number;
-  /** Se resuelve en frontend con los datos del producto */
-  productName?: string;
-  productPrice?: number;
-  productImage?: string;
+  variantId?: string;
+  // ── Datos enriquecidos (vienen del backend con JOIN) ──
+  productName: string;
+  productPrice: number;
+  productImage: string | null;
+  variantLabel?: string | null;
+  variantColor?: string | null;
 }

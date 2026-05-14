@@ -13,6 +13,37 @@ import {
   Avatar,
 } from '@nextui-org/react';
 import { useAuthStore } from '../../modules/auth/application/auth.store';
+import { useCartStore } from '../../modules/cart/application/cart.store';
+
+/**
+ * Badge del carrito con contador de ítems.
+ * Se actualiza automáticamente vía Zustand.
+ */
+function CartBadge() {
+  const totalItems = useCartStore((s) => s.totalItems());
+  return (
+    <Button
+      as={Link}
+      to="/carrito"
+      isIconOnly
+      variant="light"
+      radius="lg"
+      className="text-default-500 hover:text-foreground relative"
+      id="navbar-cart-btn"
+      aria-label="Carrito de compras"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
+        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+      </svg>
+      {totalItems > 0 && (
+        <span className="absolute -top-0.5 -right-0.5 w-4 h-4 flex items-center justify-center bg-primary text-background text-[10px] font-bold rounded-full">
+          {totalItems > 9 ? '9+' : totalItems}
+        </span>
+      )}
+    </Button>
+  );
+}
 
 /**
  * Barra de navegación global — glassmorphism sticky top.
@@ -93,21 +124,7 @@ export default function Navbar() {
       <NavbarContent justify="end" className="gap-3">
         {/* Cart */}
         <NavbarItem>
-          <Button
-            as={Link}
-            to="/carrito"
-            isIconOnly
-            variant="light"
-            radius="lg"
-            className="text-default-500 hover:text-foreground"
-            id="navbar-cart-btn"
-            aria-label="Carrito de compras"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
-              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-            </svg>
-          </Button>
+          <CartBadge />
         </NavbarItem>
 
         {isAuthenticated && user ? (

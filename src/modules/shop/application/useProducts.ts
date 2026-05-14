@@ -33,7 +33,7 @@ export function useProducts(categoryId?: string): UseProductsReturn {
         if (!cancelled) {
           setProducts(data);
         }
-      } catch (err) {
+      } catch {
         if (!cancelled) {
           setError('No se pudieron cargar los productos');
           setProducts([]);

@@ -1,21 +1,30 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button, Chip, Accordion, AccordionItem, Breadcrumbs, BreadcrumbItem } from '@nextui-org/react';
 import { useProducts } from '../../application/useProducts';
 import { useCategories } from '../../application/useCategories';
+import { useCartStore } from '../../../cart/application/cart.store';
+import { useAuthStore } from '../../../auth/application/auth.store';
 
 /**
  * Página de detalle de un producto.
  */
 export default function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { products, loading } = useProducts();
   const { categories } = useCategories();
+  const addItem = useCartStore((s) => s.addItem);
+  const cartError = useCartStore((s) => s.error);
+  const clearCartError = useCartStore((s) => s.clearError);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const [selectedImg, setSelectedImg] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [adding, setAdding] = useState(false);
 
   const product = useMemo(() => products.find((p) => p.id === id), [products, id]);
 
@@ -39,28 +48,70 @@ export default function ProductDetailPage() {
       .slice(0, 4);
   }, [products, product]);
 
-  const variants = product?.variants ?? [];
+  const variants = useMemo(() => product?.variants ?? [], [product?.variants]);
   const colors = [...new Set(variants.map((v) => v.color).filter(Boolean))] as string[];
   const sizes = [...new Set(variants.map((v) => v.size).filter(Boolean))] as string[];
 
-  const selectedVariantStock = useMemo(() => {
-    if (!selectedSize && !selectedColor) return variants.reduce((sum, v) => sum + v.stock, 0);
-    return variants
-      .filter((v) => {
-        if (selectedSize && v.size !== selectedSize) return false;
-        if (selectedColor && v.color !== selectedColor) return false;
-        return true;
-      })
-      .reduce((sum, v) => sum + v.stock, 0);
+  // Variante(s) que coinciden con la selección actual
+  const matchingVariants = useMemo(() => {
+    return variants.filter((v) => {
+      if (selectedSize && v.size !== selectedSize) return false;
+      if (selectedColor && v.color !== selectedColor) return false;
+      return true;
+    });
   }, [variants, selectedSize, selectedColor]);
 
-  const totalStock = variants.reduce((sum, v) => sum + v.stock, 0);
-  const images = product?.images ?? [];
+  const selectedVariantStock = useMemo(() => {
+    // Producto sin variantes (single sin tallas/colores): usar totalStock del producto
+    if (variants.length === 0) return product?.totalStock ?? 0;
+    if (!selectedSize && !selectedColor) return variants.reduce((sum, v) => sum + v.stock, 0);
+    return matchingVariants.reduce((sum, v) => sum + v.stock, 0);
+  }, [variants, matchingVariants, selectedSize, selectedColor, product?.totalStock]);
+
+  // Precio dinámico: si la variante seleccionada tiene priceOverride, usarlo
+  const displayPrice = useMemo(() => {
+    if (matchingVariants.length === 1 && matchingVariants[0].priceOverride != null) {
+      return matchingVariants[0].priceOverride;
+    }
+    // Si varias variantes coinciden y todas tienen el mismo priceOverride, usarlo
+    if (matchingVariants.length > 0) {
+      const overrides = matchingVariants.map((v) => v.priceOverride).filter((p) => p != null);
+      if (overrides.length > 0 && overrides.every((p) => p === overrides[0])) {
+        return overrides[0]!;
+      }
+    }
+    return product?.price ?? 0;
+  }, [product?.price, matchingVariants]);
+
+  const totalStock = variants.length > 0
+    ? variants.reduce((sum, v) => sum + v.stock, 0)
+    : (product?.totalStock ?? 0);
+
+  // Imágenes dinámicas: si la variante seleccionada tiene imágenes propias, mostrarlas
+  // Si no, mostrar las imágenes generales del producto
+  const displayImages = useMemo(() => {
+    // Recopilar imágenes de las variantes que coinciden
+    const variantImages = matchingVariants.flatMap((v) => v.images ?? []);
+    if (variantImages.length > 0) return variantImages;
+    // Fallback: imágenes generales del producto
+    return product?.images ?? [];
+  }, [product?.images, matchingVariants]);
+
+  // ID de la variante seleccionada (para enviar al carrito)
+  const selectedVariantId = useMemo(() => {
+    if (variants.length === 0) return undefined;
+    // Preferir match único; si hay varios, usar el primero (el usuario ya filtró por size/color)
+    return matchingVariants[0]?.id;
+  }, [variants.length, matchingVariants]);
 
   useEffect(() => {
     if (sizes.length > 0 && !selectedSize) setSelectedSize(sizes[0]);
     if (colors.length > 0 && !selectedColor) setSelectedColor(colors[0]);
   }, [sizes.length, colors.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    setSelectedImg(0);
+  }, [displayImages.length, selectedSize, selectedColor]);
 
   const specItems = product?.specification
     ? product.specification.split(/[·\n]/).map((s) => s.trim()).filter(Boolean)
@@ -112,8 +163,8 @@ export default function ProductDetailPage() {
           {/* Gallery */}
           <div className="flex flex-col gap-3">
             <div className="relative aspect-square rounded-2xl overflow-hidden bg-default-100 border border-default-200">
-              {images.length > 0 ? (
-                <img src={images[selectedImg]?.url} alt={product.name} className="w-full h-full object-cover" />
+              {displayImages.length > 0 ? (
+                <img src={displayImages[selectedImg]?.url} alt={product.name} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.2">
@@ -124,9 +175,9 @@ export default function ProductDetailPage() {
                 </div>
               )}
             </div>
-            {images.length > 1 && (
+            {displayImages.length > 1 && (
               <div className="flex gap-2">
-                {images.map((img, idx) => (
+                {displayImages.map((img, idx) => (
                   <button
                     key={img.id}
                     className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${idx === selectedImg ? 'border-primary' : 'border-default-200 hover:border-default-400'}`}
@@ -145,7 +196,10 @@ export default function ProductDetailPage() {
             <h1 className="font-display text-3xl font-semibold text-foreground">{product.name}</h1>
 
             <div className="flex items-center gap-3">
-              <span className="text-2xl font-bold text-foreground">S/ {product.price.toFixed(2)}</span>
+              <span className="text-2xl font-bold text-foreground">S/ {displayPrice.toFixed(2)}</span>
+              {displayPrice !== product.price && (
+                <span className="text-sm text-default-400 line-through">S/ {product.price.toFixed(2)}</span>
+              )}
               <Chip size="sm" variant="flat" color={totalStock > 0 ? 'success' : 'danger'}>
                 {totalStock > 0 ? `${totalStock} en stock` : 'Agotado'}
               </Chip>
@@ -241,7 +295,18 @@ export default function ProductDetailPage() {
               color="primary"
               size="lg"
               className="mt-4 font-semibold"
-              isDisabled={selectedVariantStock === 0}
+              isDisabled={selectedVariantStock === 0 || adding}
+              isLoading={adding}
+              onPress={async () => {
+                if (!isAuthenticated) {
+                  navigate('/login');
+                  return;
+                }
+                clearCartError();
+                setAdding(true);
+                await addItem(product.id, quantity, selectedVariantId);
+                setAdding(false);
+              }}
               startContent={
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
@@ -249,8 +314,11 @@ export default function ProductDetailPage() {
                 </svg>
               }
             >
-              {selectedVariantStock > 0 ? `Agregar al carrito · S/ ${(product.price * quantity).toFixed(2)}` : 'Sin stock'}
+              {selectedVariantStock > 0 ? `Agregar al carrito · S/ ${(displayPrice * quantity).toFixed(2)}` : 'Sin stock'}
             </Button>
+            {cartError && (
+              <p className="text-xs text-danger mt-1">{cartError}</p>
+            )}
           </div>
         </div>
       </div>
@@ -258,7 +326,7 @@ export default function ProductDetailPage() {
       {/* Accordions */}
       {(product.description || specItems.length > 0) && (
         <div className="border-t border-default-200 bg-default-50/30">
-          <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="max-w-3xl mx-auto px-6 py-6">
             <Accordion variant="bordered" defaultExpandedKeys={["desc", "specs"]} className="border-default-200">
               {product.description ? (
                 <AccordionItem

@@ -12,7 +12,7 @@ interface CartState {
   /** Cargar carrito del usuario */
   fetchCart: () => Promise<void>;
   /** Agregar producto al carrito */
-  addItem: (productId: string, quantity: number) => Promise<void>;
+  addItem: (productId: string, quantity: number, variantId?: string) => Promise<void>;
   /** Actualizar cantidad de un ítem */
   updateItem: (itemId: string, quantity: number) => Promise<void>;
   /** Eliminar ítem */
@@ -23,6 +23,8 @@ interface CartState {
   applyCoupon: (code: string) => Promise<void>;
   /** Limpiar cupón */
   clearCoupon: () => void;
+  /** Limpiar error */
+  clearError: () => void;
   /** Número total de items */
   totalItems: () => number;
 }
@@ -45,12 +47,15 @@ export const useCartStore = create<CartState>((set, get) => ({
     }
   },
 
-  addItem: async (productId, quantity) => {
+  addItem: async (productId, quantity, variantId) => {
     try {
-      await cartApiRepository.addItem(productId, quantity);
+      await cartApiRepository.addItem(productId, quantity, variantId);
       await get().fetchCart();
-    } catch {
-      set({ error: 'No se pudo agregar al carrito' });
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ??
+        'No se pudo agregar al carrito';
+      set({ error: message });
     }
   },
 
@@ -98,6 +103,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   },
 
   clearCoupon: () => set({ couponCode: null, discount: 0, couponError: null }),
+  clearError: () => set({ error: null }),
 
   totalItems: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
 }));

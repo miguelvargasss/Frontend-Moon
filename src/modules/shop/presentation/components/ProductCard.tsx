@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardBody, CardFooter, Button, Chip } from '@nextui-org/react';
 import type { Product } from '../../domain/product.model';
+import { useCartStore } from '../../../cart/application/cart.store';
+import { useAuthStore } from '../../../auth/application/auth.store';
 
 interface ProductCardProps {
   product: Product;
@@ -12,9 +14,13 @@ interface ProductCardProps {
  * Card de producto compacta con carrusel de imágenes y overlay "Ver Detalles".
  */
 export default function ProductCard({ product, categoryName }: ProductCardProps) {
+  const navigate = useNavigate();
+  const addItem = useCartStore((s) => s.addItem);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const images = product.images ?? [];
   const hasImages = images.length > 0;
   const [currentImg, setCurrentImg] = useState(0);
+  const [adding, setAdding] = useState(false);
 
   const goNext = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -109,6 +115,22 @@ export default function ProductCard({ product, categoryName }: ProductCardProps)
           aria-label={`Agregar ${product.name} al carrito`}
           isIconOnly
           className="rounded-lg"
+          isLoading={adding}
+          onPress={async () => {
+            if (!isAuthenticated) {
+              navigate('/login');
+              return;
+            }
+            // Si tiene variantes → ir a detalle para elegir talla/color
+            if (product.variants && product.variants.length > 0) {
+              navigate(`/producto/${product.id}`);
+              return;
+            }
+            // Producto simple sin variantes → agregar directo
+            setAdding(true);
+            await addItem(product.id, 1);
+            setAdding(false);
+          }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="8" cy="21" r="1" />
