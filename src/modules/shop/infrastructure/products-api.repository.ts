@@ -115,7 +115,6 @@ export const productsApiRepository = {
   async getAll(categoryId?: string): Promise<Product[]> {
     const params = categoryId ? { categoryId } : {};
     const { data } = await apiClient.get('/products', { params });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (data.data ?? []).map(normalizeProduct);
   },
 

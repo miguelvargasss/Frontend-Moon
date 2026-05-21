@@ -76,7 +76,7 @@ export default function MultiProductForm({ product, categories, onClose }: Multi
 
     try {
       setUploading(true);
-      const data: any = {
+      const data = {
         name: name.trim(),
         productType: 'multiple' as const,
         description: description.trim() || undefined,

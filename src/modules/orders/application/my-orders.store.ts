@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { isAxiosError } from 'axios';
 import type { AdminOrder } from '../domain/admin-order.model';
 import { ordersApiRepository } from '../infrastructure/orders-api.repository';
 
@@ -19,9 +20,9 @@ export const useMyOrdersStore = create<MyOrdersState>((set) => ({
     try {
       const orders = await ordersApiRepository.getMyOrders();
       set({ orders, isLoading: false });
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error.response?.data?.message || 'Error al cargar tus pedidos',
+        error: (isAxiosError(error) ? error.response?.data?.message : undefined) || 'Error al cargar tus pedidos',
         isLoading: false,
       });
     }

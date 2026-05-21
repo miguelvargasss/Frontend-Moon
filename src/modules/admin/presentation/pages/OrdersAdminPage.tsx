@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Button, Input, Chip, Spinner } from '@nextui-org/react';
 import { useAdminOrdersStore } from '../../../orders/application/admin-orders.store';
 import OrderDetailModal from '../components/OrderDetailModal';
-import type { AdminOrder } from '../../../orders/domain/admin-order.model';
+import type { AdminOrder, AdminOrderItem } from '../../../orders/domain/admin-order.model';
 
 export default function OrdersAdminPage() {
   const { orders, isLoading, fetchOrders, fetchStatuses } = useAdminOrdersStore();
@@ -97,7 +97,7 @@ export default function OrdersAdminPage() {
               </thead>
               <tbody className="divide-y divide-default-200/50">
                 {filteredOrders.map((order: AdminOrder) => {
-                  const total = order.items?.reduce((s: number, i: any) => s + i.priceAtSale * i.quantity, 0) || 0;
+                  const total = order.items?.reduce((s: number, i: AdminOrderItem) => s + i.priceAtSale * i.quantity, 0) || 0;
                   
                   return (
                     <tr key={order.id} className="hover:bg-default-50/50 transition-colors">

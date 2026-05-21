@@ -2,13 +2,18 @@ import { useState, useEffect } from 'react';
 import { Tabs, Tab, Input, Button, Card, CardBody, Avatar, Chip } from '@nextui-org/react';
 import { useAuthStore } from '../../../auth/application/auth.store';
 import { useShippingStore } from '../../../shipping/application/shipping.store';
+import { useMyOrdersStore } from '../../../orders/application/my-orders.store';
 import AddressForm from '../../../shipping/presentation/components/AddressForm';
 import type { ShippingAddress } from '../../../shipping/domain/shipping-address.model';
 import apiClient from '../../../../core/http/api-client';
+import { isAxiosError } from 'axios';
+
+const CONFIRMED_STATUSES = ['CONFIRMADO', 'ENVIADO', 'FINALIZADO'];
 
 export default function ProfilePage() {
-  const { user, restoreSession } = useAuthStore();
+  const { user, refreshProfile } = useAuthStore();
   const { addresses, isLoading: shippingLoading, fetchAddresses, createAddress, deleteAddress } = useShippingStore();
+  const { orders, fetchMyOrders } = useMyOrdersStore();
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [formData, setFormData] = useState({
@@ -22,7 +27,9 @@ export default function ProfilePage() {
 
   useEffect(() => {
     fetchAddresses();
-  }, [fetchAddresses]);
+    refreshProfile();
+    fetchMyOrders();
+  }, [fetchAddresses, refreshProfile, fetchMyOrders]);
 
   // Handle Profile Update
   const handleSaveProfile = async () => {
@@ -30,10 +37,10 @@ export default function ProfilePage() {
     setError(null);
     try {
       await apiClient.patch('/users/profile', formData);
-      await restoreSession(); // Refresh user data globally
+      await refreshProfile();
       setIsEditingProfile(false);
-    } catch (e: any) {
-      setError(e.response?.data?.message || 'Error al actualizar el perfil');
+    } catch (e: unknown) {
+      setError((isAxiosError(e) ? e.response?.data?.message : undefined) || 'Error al actualizar el perfil');
     } finally {
       setIsSaving(false);
     }
@@ -73,11 +80,11 @@ export default function ProfilePage() {
 
             <div className="mt-4 flex flex-col items-center gap-3">
               <div className="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-2.5 rounded-2xl flex items-center gap-3 shadow-inner">
-                <span className="text-xl">⭐</span>
-                <span className="text-xl font-bold text-primary tabular-nums">{user.points || 0}</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#f5d020" stroke="#f5d020" strokeWidth="1" className="shrink-0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span className="text-xl font-bold text-primary tabular-nums">{user.points ?? 0}</span>
                 <span className="text-sm font-medium text-green-100">MoonPoints</span>
               </div>
-              <p className="text-xs text-green-200/50 font-medium tracking-wide">Acumula puntos con cada compra 🌙</p>
+              <p className="text-xs text-green-200/50 font-medium tracking-wide">Acumula puntos con cada compra</p>
             </div>
           </div>
         </div>
@@ -229,6 +236,79 @@ export default function ProfilePage() {
                       ))}
                     </div>
                   )}
+                </CardBody>
+              </Card>
+            </Tab>
+
+            {/* Pestaña: Historial de Puntos */}
+            <Tab
+              key="history"
+              title={
+                <div className="flex items-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  Historial
+                </div>
+              }
+            >
+              <Card className="mt-4 bg-content1 border border-default-200/50 shadow-sm" shadow="none">
+                <CardBody className="p-6 sm:p-8 flex flex-col gap-5">
+                  <div className="flex justify-between items-center border-b border-default-200/50 pb-4">
+                    <div>
+                      <h2 className="text-xl font-bold text-foreground">Historial de MoonPoints</h2>
+                      <p className="text-sm text-default-500">Puntos ganados por pedidos confirmados.</p>
+                    </div>
+                    <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-xl px-4 py-2">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="#f5d020" stroke="#f5d020" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                      <span className="font-bold text-primary tabular-nums">{user.points ?? 0}</span>
+                      <span className="text-xs text-default-500">pts totales</span>
+                    </div>
+                  </div>
+
+                  {(() => {
+                    const confirmedOrders = orders.filter((o) =>
+                      CONFIRMED_STATUSES.includes(o.statusName.toUpperCase()),
+                    );
+                    if (confirmedOrders.length === 0) {
+                      return (
+                        <div className="flex flex-col items-center justify-center py-10 bg-default-50 rounded-2xl border border-default-200 border-dashed gap-3">
+                          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-default-300"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                          <p className="text-default-500 text-sm font-medium">Aún no tienes pedidos confirmados</p>
+                          <p className="text-xs text-default-400">Gana puntos cuando el admin confirme tus pedidos</p>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="flex flex-col gap-0 border border-default-200/50 rounded-xl overflow-hidden">
+                        {/* Header */}
+                        <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-4 py-2.5 bg-default-50 border-b border-default-200/50">
+                          <span className="text-[11px] font-semibold text-default-400 uppercase tracking-wider">Pedido</span>
+                          <span className="text-[11px] font-semibold text-default-400 uppercase tracking-wider text-right">Total</span>
+                          <span className="text-[11px] font-semibold text-default-400 uppercase tracking-wider text-right">Estado</span>
+                          <span className="text-[11px] font-semibold text-default-400 uppercase tracking-wider text-right">Puntos</span>
+                        </div>
+                        {confirmedOrders.map((order) => {
+                          const total = order.items?.reduce((s, i) => s + i.priceAtSale * i.quantity, 0) ?? 0;
+                          const pts = Math.round(total / 2 * 10) / 10;
+                          return (
+                            <div key={order.id} className="grid grid-cols-[1fr_auto_auto_auto] gap-4 px-4 py-3.5 border-b border-default-100 last:border-0 hover:bg-default-50/50 transition-colors">
+                              <div className="min-w-0">
+                                <p className="text-sm font-semibold text-foreground font-mono">#{order.orderCode}</p>
+                                <p className="text-xs text-default-400 mt-0.5">{new Date(order.date).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                              </div>
+                              <span className="text-sm font-medium text-foreground tabular-nums self-center">S/ {total.toFixed(2)}</span>
+                              <Chip size="sm" color={order.statusName === 'FINALIZADO' ? 'success' : 'primary'} variant="flat" className="self-center text-[10px]">
+                                {order.statusName}
+                              </Chip>
+                              <div className="flex items-center gap-1.5 self-center justify-end">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="#f5d020" stroke="#f5d020" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                <span className="text-sm font-bold text-primary tabular-nums">+{pts}</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
                 </CardBody>
               </Card>
             </Tab>

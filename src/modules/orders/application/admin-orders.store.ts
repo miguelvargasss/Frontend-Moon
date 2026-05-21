@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { isAxiosError } from 'axios';
 import type { AdminOrder, OrderStatus } from '../domain/admin-order.model';
 import { adminOrdersApiRepository } from '../infrastructure/admin-orders-api.repository';
 
@@ -24,9 +25,9 @@ export const useAdminOrdersStore = create<AdminOrdersState>((set) => ({
     try {
       const orders = await adminOrdersApiRepository.getAllOrders();
       set({ orders, isLoading: false });
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error.response?.data?.message || 'Error al cargar los pedidos',
+        error: (isAxiosError(error) ? error.response?.data?.message : undefined) || 'Error al cargar los pedidos',
         isLoading: false,
       });
     }
@@ -51,8 +52,8 @@ export const useAdminOrdersStore = create<AdminOrdersState>((set) => ({
           o.id === orderId ? { ...o, statusName: newStatusName } : o
         ),
       }));
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Error al actualizar el estado');
+    } catch (error: unknown) {
+      throw new Error((isAxiosError(error) ? error.response?.data?.message : undefined) || 'Error al actualizar el estado');
     }
   },
 }));

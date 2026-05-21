@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { isAxiosError } from 'axios';
 import type { CartItem } from '../domain/cart-item.model';
 import { cartApiRepository } from '../infrastructure/cart-api.repository';
 
@@ -97,8 +98,9 @@ export const useCartStore = create<CartState>((set, get) => ({
         discount: result.discountAmount ?? 0,
         couponError: null,
       });
-    } catch {
-      set({ couponError: 'Cupón inválido o expirado', discount: 0, couponCode: null });
+    } catch (err: unknown) {
+      const errorMessage = isAxiosError(err) ? err.response?.data?.message : undefined;
+      set({ couponError: errorMessage || 'Cupón inválido o expirado', discount: 0, couponCode: null });
     }
   },
 

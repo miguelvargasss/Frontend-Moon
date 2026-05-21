@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { isAxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Button, Chip, Divider } from '@nextui-org/react';
 import { useCartStore } from '../../../cart/application/cart.store';
@@ -7,7 +8,6 @@ import AddressForm from '../../../shipping/presentation/components/AddressForm';
 import type { ShippingAddress } from '../../../shipping/domain/shipping-address.model';
 import { ordersApiRepository } from '../../../orders/infrastructure/orders-api.repository';
 import OrderSuccessScreen from '../components/OrderSuccessScreen';
-import { useAuthStore } from '../../../auth/application/auth.store';
 
 /**
  * Página de Checkout — Seleccionar/crear dirección de envío y confirmar pedido.
@@ -19,29 +19,29 @@ export default function CheckoutPage() {
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [addressesLoaded, setAddressesLoaded] = useState(false);
   const [step, setStep] = useState<'address' | 'confirm' | 'success'>('address');
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [orderError, setOrderError] = useState<string | null>(null);
   const [createdOrderCode, setCreatedOrderCode] = useState<string | null>(null);
   const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
   const [pointsEarned, setPointsEarned] = useState<number>(0);
-  const [totalPoints, setTotalPoints] = useState<number | undefined>(undefined);
-  const refreshProfile = useAuthStore((s) => s.refreshProfile);
 
-  useEffect(() => {
-    fetchAddresses();
-  }, [fetchAddresses]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchAddresses().then(() => setAddressesLoaded(true)); }, []);
 
-  // Auto-seleccionar si solo hay una dirección
+  // Auto-seleccionar si solo hay una dirección; mostrar formulario si no hay ninguna.
+  // Solo actúa DESPUÉS de que fetchAddresses() haya resuelto para evitar que
+  // el estado inicial vacío del store dispare el formulario prematuramente.
   useEffect(() => {
+    if (!addressesLoaded) return;
     if (addresses.length === 1 && !selectedAddressId) {
       setSelectedAddressId(addresses[0].id);
     }
-    // Si no hay direcciones, mostrar formulario directamente
-    if (addresses.length === 0 && !isLoading) {
+    if (addresses.length === 0) {
       setShowForm(true);
     }
-  }, [addresses, selectedAddressId, isLoading]);
+  }, [addresses, selectedAddressId, addressesLoaded]);
 
   const subtotal = items.reduce((s, i) => s + i.productPrice * i.quantity, 0);
   const totalUnits = items.reduce((s, i) => s + i.quantity, 0);
@@ -67,14 +67,12 @@ export default function CheckoutPage() {
       const result = await ordersApiRepository.createOrder(selectedAddressId, couponCode ?? undefined);
       setCreatedOrderCode(result.order.orderCode);
       setWhatsappUrl(result.whatsappUrl);
-      setPointsEarned(result.pointsEarned ?? 0);
-      setTotalPoints(result.totalPoints);
+      // Los puntos se acreditan al confirmar (no al crear). Mostramos el estimado.
+      setPointsEarned(Math.round((total / 2) * 10) / 10);
       await clearCart();
-      // Refrescar perfil para que el badge de MoonPoints en el navbar/profile se actualice
-      refreshProfile();
       setStep('success');
-    } catch (error: any) {
-      setOrderError(error.response?.data?.message || 'Hubo un error al procesar el pedido. Inténtalo de nuevo.');
+    } catch (error: unknown) {
+      setOrderError((isAxiosError(error) ? error.response?.data?.message : undefined) || 'Hubo un error al procesar el pedido. Inténtalo de nuevo.');
     } finally {
       setIsCreatingOrder(false);
     }
@@ -87,7 +85,6 @@ export default function CheckoutPage() {
           orderCode={createdOrderCode}
           whatsappUrl={whatsappUrl}
           pointsEarned={pointsEarned}
-          totalPoints={totalPoints}
         />
       </div>
     );
@@ -362,6 +359,19 @@ export default function CheckoutPage() {
                 <span className="text-base font-bold text-foreground">Total</span>
                 <span className="text-2xl font-bold text-foreground tabular-nums">S/ {total.toFixed(2)}</span>
               </div>
+
+              {/* MoonPoints preview */}
+              {total > 0 && (
+                <div className="mt-4 flex items-center gap-3 bg-primary/5 border border-primary/20 rounded-xl px-4 py-3">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#f5d020" stroke="#f5d020" strokeWidth="1" className="shrink-0"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  <div>
+                    <p className="text-xs font-semibold text-primary leading-tight">
+                      Ganarás ~{Math.round((total / 2) * 10) / 10} MoonPoints
+                    </p>
+                    <p className="text-[11px] text-default-400 mt-0.5">Al confirmar tu pedido</p>
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center justify-center gap-3 mt-5">
                 <span className="flex items-center gap-1 text-[11px] text-default-400">

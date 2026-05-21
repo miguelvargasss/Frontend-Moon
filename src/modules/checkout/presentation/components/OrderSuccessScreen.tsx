@@ -5,10 +5,9 @@ interface OrderSuccessScreenProps {
   orderCode: string;
   whatsappUrl: string;
   pointsEarned?: number;
-  totalPoints?: number;
 }
 
-export default function OrderSuccessScreen({ orderCode, whatsappUrl, pointsEarned = 0, totalPoints }: OrderSuccessScreenProps) {
+export default function OrderSuccessScreen({ orderCode, whatsappUrl, pointsEarned = 0 }: OrderSuccessScreenProps) {
 
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center max-w-2xl mx-auto text-center px-4">
@@ -40,21 +39,19 @@ export default function OrderSuccessScreen({ orderCode, whatsappUrl, pointsEarne
         <div className="relative w-full max-w-md mb-8 overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent p-5 animate-appearance-in">
           <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-primary/20 blur-2xl" />
           <div className="relative flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-2xl shrink-0">
-              ✨
+            <div className="w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center shrink-0">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="#f5d020" stroke="#f5d020" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             </div>
             <div className="text-left flex-1">
               <p className="text-[10px] font-semibold uppercase tracking-widest text-primary mb-0.5">
-                MoonPoints ganados
+                MoonPoints por ganar
               </p>
               <p className="text-xl font-bold text-foreground">
                 +{pointsEarned} <span className="text-sm font-medium text-default-500">puntos</span>
               </p>
-              {typeof totalPoints === 'number' && (
-                <p className="text-xs text-default-500 mt-1">
-                  Saldo total: <span className="font-semibold text-foreground tabular-nums">{totalPoints}</span> ⭐
-                </p>
-              )}
+              <p className="text-xs text-default-400 mt-1.5 leading-relaxed">
+                Se reflejarán en tu perfil una vez confirmemos tu pedido
+              </p>
             </div>
           </div>
         </div>

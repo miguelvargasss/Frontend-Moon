@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { isAxiosError } from 'axios';
 import {
   Modal,
   ModalContent,
@@ -30,6 +31,7 @@ export default function CouponModal({ coupon, onClose }: Props) {
   const [couponQuantity, setCouponQuantity] = useState('');
   const [minimumAmount, setMinimumAmount] = useState('');
   const [discountAmount, setDiscountAmount] = useState('');
+  const [discountType, setDiscountType] = useState<'fixed' | 'percentage'>('fixed');
   const [categoryId, setCategoryId] = useState<string>('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +49,7 @@ export default function CouponModal({ coupon, onClose }: Props) {
       setCouponQuantity(String(coupon.couponQuantity));
       setMinimumAmount(String(coupon.minimumAmount));
       setDiscountAmount(String(coupon.discountAmount));
+      setDiscountType(coupon.discountType ?? 'fixed');
       setCategoryId(coupon.categoryId ?? '');
     } else {
       setCode('');
@@ -54,6 +57,7 @@ export default function CouponModal({ coupon, onClose }: Props) {
       setCouponQuantity('');
       setMinimumAmount('');
       setDiscountAmount('');
+      setDiscountType('fixed');
       setCategoryId('');
     }
   }, [coupon]);
@@ -74,6 +78,7 @@ export default function CouponModal({ coupon, onClose }: Props) {
         couponQuantity: parseInt(couponQuantity, 10),
         minimumAmount: parseFloat(minimumAmount || '0'),
         discountAmount: parseFloat(discountAmount),
+        discountType,
         ...(categoryId ? { categoryId } : {}),
       };
 
@@ -83,8 +88,8 @@ export default function CouponModal({ coupon, onClose }: Props) {
         await createCoupon(data);
       }
       onClose();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Error al guardar el cupón');
+    } catch (err: unknown) {
+      setError((isAxiosError(err) ? err.response?.data?.message : undefined) || 'Error al guardar el cupón');
     } finally {
       setSaving(false);
     }
@@ -137,6 +142,34 @@ export default function CouponModal({ coupon, onClose }: Props) {
             isRequired
           />
 
+          {/* Tipo de descuento */}
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setDiscountType('fixed')}
+              className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
+                discountType === 'fixed'
+                  ? 'bg-primary/15 border-primary text-primary'
+                  : 'border-default-200 text-default-500 hover:border-default-400'
+              }`}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+              Fijo (S/)
+            </button>
+            <button
+              type="button"
+              onClick={() => setDiscountType('percentage')}
+              className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
+                discountType === 'percentage'
+                  ? 'bg-primary/15 border-primary text-primary'
+                  : 'border-default-200 text-default-500 hover:border-default-400'
+              }`}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="19" y1="5" x2="5" y2="19" /><circle cx="6.5" cy="6.5" r="2.5" /><circle cx="17.5" cy="17.5" r="2.5" /></svg>
+              Porcentual (%)
+            </button>
+          </div>
+
           <div className="grid grid-cols-2 gap-3">
             <Input
               label="Cantidad"
@@ -150,15 +183,16 @@ export default function CouponModal({ coupon, onClose }: Props) {
               min={1}
             />
             <Input
-              label="Descuento (S/)"
+              label={discountType === 'percentage' ? 'Descuento (%)' : 'Descuento (S/)'}
               type="number"
-              placeholder="10"
+              placeholder={discountType === 'percentage' ? '10' : '10.00'}
               value={discountAmount}
               onChange={(e) => setDiscountAmount(e.target.value)}
               variant="bordered"
               classNames={{ inputWrapper: 'border-default-200' }}
               isRequired
               min={0}
+              max={discountType === 'percentage' ? 100 : undefined}
               step={0.01}
             />
           </div>

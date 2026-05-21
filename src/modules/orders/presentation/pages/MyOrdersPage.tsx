@@ -300,7 +300,24 @@ export default function MyOrdersPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-5 sm:justify-end">
+                      <div className="flex items-center gap-3 sm:justify-end">
+                        {/* MoonPoints badge */}
+                        {order.statusName === 'CANCELADO' ? (
+                          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-default-100/50 border border-default-200/50">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-default-400"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                            <span className="text-[10px] text-default-400 font-medium">Sin puntos</span>
+                          </div>
+                        ) : ['CONFIRMADO', 'ENVIADO', 'FINALIZADO'].includes(order.statusName) ? (
+                          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/8 border border-primary/20">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="#f5d020" stroke="#f5d020" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <span className="text-[10px] text-primary font-bold tabular-nums">+{Math.round(totalAmount / 2 * 10) / 10} pts</span>
+                          </div>
+                        ) : (
+                          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-warning/8 border border-warning/20">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-warning"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span className="text-[10px] text-warning font-medium tabular-nums">~{Math.round(totalAmount / 2 * 10) / 10} pts</span>
+                          </div>
+                        )}
                         <div className="text-right">
                           <p className="text-sm font-bold text-foreground tabular-nums">
                             S/ {totalAmount.toFixed(2)}

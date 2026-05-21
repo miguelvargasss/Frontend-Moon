@@ -11,7 +11,6 @@ export interface OrderResponse {
   discount: number;
   whatsappUrl: string;
   pointsEarned?: number;
-  totalPoints?: number;
 }
 
 export const ordersApiRepository = {

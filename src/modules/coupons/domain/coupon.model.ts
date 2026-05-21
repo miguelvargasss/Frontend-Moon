@@ -6,6 +6,7 @@ export interface CouponModel {
   couponQuantity: number;
   minimumAmount: number;
   discountAmount: number;
+  discountType: 'fixed' | 'percentage';
   categoryId?: string;
 }
 
@@ -16,5 +17,6 @@ export interface CouponFormData {
   couponQuantity: number;
   minimumAmount: number;
   discountAmount: number;
+  discountType: 'fixed' | 'percentage';
   categoryId?: string;
 }

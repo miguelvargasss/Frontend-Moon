@@ -3,6 +3,7 @@ import { isAxiosError } from 'axios';
 import type { AuthUser } from '../domain/auth-user.model';
 import { authApiRepository } from '../infrastructure/auth-api.repository';
 import { tokenStorage } from '../infrastructure/token-storage.service';
+import { useCartStore } from '../../cart/application/cart.store';
 
 interface AuthState {
   /** Usuario autenticado actual */
@@ -96,6 +97,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       // Silenciar errores de logout — limpiamos tokens de todos modos
     } finally {
       tokenStorage.clear();
+      useCartStore.setState({ items: [], couponCode: null, discount: 0, couponError: null, error: null });
       set({ user: null, isAuthenticated: false });
     }
   },
@@ -111,7 +113,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       return;
     }
 
-    // Si ya tenemos el usuario cacheado, solo necesitamos validar el token
+    // Si ya tenemos el usuario cacheado, mostrar inmediatamente y refrescar en background
     const cachedUser = tokenStorage.getUser();
     if (cachedUser) {
       set({
@@ -120,9 +122,19 @@ export const useAuthStore = create<AuthState>((set) => ({
         isRestoring: false,
       });
 
-      // Validar token en background (sin bloquear la UI)
+      // Validar token Y actualizar datos frescos (puntos, nombre, etc.) en background
       try {
-        await authApiRepository.getProfile();
+        const profile = await authApiRepository.getProfile();
+        const fresh: AuthUser = {
+          id: profile.id,
+          email: profile.email,
+          name: profile.name,
+          lastName: profile.lastName,
+          role: (profile.role as AuthUser['role']) ?? cachedUser.role,
+          points: profile.points,
+        };
+        tokenStorage.saveUser(fresh);
+        set({ user: fresh });
       } catch {
         // Token expirado — limpiar sesión
         tokenStorage.clear();

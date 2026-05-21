@@ -35,6 +35,7 @@ function mapCoupon(raw: any): CouponModel {
     couponQuantity: raw.couponQuantity,
     minimumAmount: raw.minimumAmount,
     discountAmount: raw.discountAmount,
+    discountType: raw.discountType ?? 'fixed',
     categoryId: raw.categoryId,
   };
 }

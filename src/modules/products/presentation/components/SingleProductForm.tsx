@@ -31,13 +31,10 @@ export default function SingleProductForm({ product, categories, onClose }: Sing
   const [sku, setSku] = useState(product?.sku ?? '');
   const [sizeSystemId, setSizeSystemId] = useState(product?.sizeSystemId ?? '');
   const [statusId, setStatusId] = useState(product?.statusId ?? '');
-
-  useEffect(() => {
-    if (!statusId && !product && statuses.length > 0) {
-      const disponible = statuses.find(s => s.name.toLowerCase() === 'disponible');
-      if (disponible) setStatusId(disponible.id);
-    }
-  }, [statuses, statusId, product]);
+  const effectiveStatusId = statusId ||
+    (!product && statuses.length > 0
+      ? (statuses.find(s => s.name.toLowerCase() === 'disponible')?.id ?? '')
+      : '');
 
   // Imágenes globales
   const [globalExisting, setGlobalExisting] = useState<ProductImageModel[]>(product?.images ?? []);
@@ -71,7 +68,7 @@ export default function SingleProductForm({ product, categories, onClose }: Sing
     const validVariants = variants.filter(v => v.sizeLabel || v.color || v.stock > 0);
     try {
       setUploading(true);
-      const data: any = {
+      const data = {
         name: name.trim(),
         productType: 'single' as const,
         price: Number(price),
@@ -81,7 +78,7 @@ export default function SingleProductForm({ product, categories, onClose }: Sing
         specification: specification.trim() || undefined,
         sizeSystemId: sizeSystemId || undefined,
         categoryId: categoryId || undefined,
-        statusId: statusId || undefined,
+        statusId: effectiveStatusId || undefined,
         variants: validVariants.length > 0 ? validVariants.map(v => ({
           sizeLabel: v.sizeLabel || undefined,
           color: v.color || undefined,
@@ -131,7 +128,7 @@ export default function SingleProductForm({ product, categories, onClose }: Sing
       </ModalHeader>
       <ModalBody as="form" id="single-product-form" onSubmit={handleSubmit} className="gap-4">
         <ProductBaseFields
-          name={name} categoryId={categoryId} statusId={statusId}
+          name={name} categoryId={categoryId} statusId={effectiveStatusId}
           description={description} specification={specification}
           statuses={statuses} categories={categories}
           onNameChange={setName} onCategoryChange={setCategoryId}
