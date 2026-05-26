@@ -122,10 +122,11 @@ export default function StyleCard({
 
           {/* Images */}
           <div className="flex flex-col gap-1">
-            <span className="text-xs font-medium text-default-500">Imágenes del estilo</span>
+            <span className="text-xs font-medium text-default-500">Imágenes del estilo <span className="text-default-400 font-normal">(máx. 10)</span></span>
             <ImageUploader
               existingImages={existingImages}
               pendingFiles={pendingFiles}
+              maxImages={10}
               onAddFiles={onAddFiles}
               onRemovePending={onRemovePending}
               onRemoveExisting={onRemoveExisting}

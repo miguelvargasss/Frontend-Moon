@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Input, Button, Textarea } from '@nextui-org/react';
+import { useState, useMemo } from 'react';
+import { Input, Button, Textarea, Select, SelectItem } from '@nextui-org/react';
 
 interface AddressFormProps {
   onSubmit: (data: {
@@ -17,6 +17,12 @@ interface AddressFormProps {
   isLoading?: boolean;
 }
 
+const DEPARTAMENTOS_PERU = [
+  'Amazonas', 'Ancash', 'Apurímac', 'Arequipa', 'Ayacucho', 'Cajamarca', 'Callao', 'Cusco',
+  'Huancavelica', 'Huánuco', 'Ica', 'Junín', 'La Libertad', 'Lambayeque', 'Lima', 'Loreto',
+  'Madre de Dios', 'Moquegua', 'Pasco', 'Piura', 'Puno', 'San Martín', 'Tacna', 'Tumbes', 'Ucayali'
+];
+
 export default function AddressForm({ onSubmit, onCancel, isLoading }: AddressFormProps) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -28,7 +34,22 @@ export default function AddressForm({ onSubmit, onCancel, isLoading }: AddressFo
   const [codeZip, setCodeZip] = useState('');
   const [dni, setDni] = useState('');
 
-  const isValid = firstName.trim() && lastName.trim() && address.trim() && city.trim() && region.trim() && phone.trim();
+  const phoneRegex = /^9\d{8}$/;
+  const dniRegex = /^\d{8}$/;
+  const zipRegex = /^\d{5}$/;
+
+  const isValid = useMemo(() => {
+    return (
+      firstName.trim().length >= 2 &&
+      lastName.trim().length >= 2 &&
+      address.trim().length >= 5 &&
+      city.trim().length >= 3 &&
+      region.trim().length > 0 &&
+      phoneRegex.test(phone) &&
+      (dni ? dniRegex.test(dni) : true) &&
+      (codeZip ? zipRegex.test(codeZip) : true)
+    );
+  }, [firstName, lastName, address, city, region, phone, dni, codeZip]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,98 +86,122 @@ export default function AddressForm({ onSubmit, onCancel, isLoading }: AddressFo
           label="Nombre"
           placeholder="Juan"
           value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
+          onChange={(e) => setFirstName(e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '').slice(0, 30))}
           variant="bordered"
           size="sm"
           isRequired
           classNames={inputClasses}
+          maxLength={30}
         />
         <Input
           label="Apellido"
           placeholder="Pérez"
           value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
+          onChange={(e) => setLastName(e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '').slice(0, 30))}
           variant="bordered"
           size="sm"
           isRequired
           classNames={inputClasses}
+          maxLength={30}
         />
       </div>
 
       <Input
-        label="DNI / Documento de identidad"
+        label="DNI (8 dígitos)"
         placeholder="12345678"
         value={dni}
-        onChange={(e) => setDni(e.target.value)}
+        onChange={(e) => setDni(e.target.value.replace(/\D/g, '').slice(0, 8))}
         variant="bordered"
         size="sm"
         classNames={inputClasses}
+        maxLength={8}
+        isInvalid={dni.length > 0 && !dniRegex.test(dni)}
+        errorMessage={dni.length > 0 && !dniRegex.test(dni) ? "DNI debe tener 8 dígitos" : ""}
       />
 
       <Textarea
         label="Dirección completa"
         placeholder="Av. Principal 123, Dpto 4B"
         value={address}
-        onChange={(e) => setAddress(e.target.value)}
+        onChange={(e) => setAddress(e.target.value.slice(0, 100))}
         variant="bordered"
         size="sm"
         isRequired
         minRows={2}
         classNames={inputClasses}
+        maxLength={100}
+        description={`${address.length}/100`}
       />
 
       <Input
         label="Referencia (opcional)"
         placeholder="Frente al parque, casa blanca"
         value={reference}
-        onChange={(e) => setReference(e.target.value)}
+        onChange={(e) => setReference(e.target.value.slice(0, 60))}
         variant="bordered"
         size="sm"
         classNames={inputClasses}
+        maxLength={60}
       />
 
       <div className="grid grid-cols-2 gap-3">
         <Input
-          label="Ciudad"
-          placeholder="Lima"
+          label="Ciudad / Distrito"
+          placeholder="Miraflores"
           value={city}
-          onChange={(e) => setCity(e.target.value)}
+          onChange={(e) => setCity(e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '').slice(0, 30))}
           variant="bordered"
           size="sm"
           isRequired
           classNames={inputClasses}
+          maxLength={30}
         />
-        <Input
-          label="Región / Departamento"
-          placeholder="Lima"
-          value={region}
-          onChange={(e) => setRegion(e.target.value)}
+        <Select
+          label="Departamento"
+          placeholder="Selecciona"
+          selectedKeys={region ? [region] : []}
+          onSelectionChange={(keys) => setRegion(Array.from(keys)[0] as string)}
           variant="bordered"
           size="sm"
           isRequired
-          classNames={inputClasses}
-        />
+          classNames={{
+            trigger: 'border-default-200 bg-default-50/50 hover:border-default-300',
+            label: 'text-default-500 text-xs',
+          }}
+        >
+          {DEPARTAMENTOS_PERU.map((dep) => (
+            <SelectItem key={dep} value={dep}>
+              {dep}
+            </SelectItem>
+          ))}
+        </Select>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <Input
-          label="Teléfono"
-          placeholder="+51 999 999 999"
+          label="Teléfono (9 dígitos)"
+          placeholder="999888777"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 9))}
           variant="bordered"
           size="sm"
           isRequired
           classNames={inputClasses}
+          maxLength={9}
+          isInvalid={phone.length > 0 && !phoneRegex.test(phone)}
+          errorMessage={phone.length > 0 && !phoneRegex.test(phone) ? "Debe empezar con 9 y tener 9 dígitos" : ""}
         />
         <Input
-          label="Código postal (opcional)"
+          label="Código postal (5 dígitos)"
           placeholder="15001"
           value={codeZip}
-          onChange={(e) => setCodeZip(e.target.value)}
+          onChange={(e) => setCodeZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
           variant="bordered"
           size="sm"
           classNames={inputClasses}
+          maxLength={5}
+          isInvalid={codeZip.length > 0 && !zipRegex.test(codeZip)}
+          errorMessage={codeZip.length > 0 && !zipRegex.test(codeZip) ? "CP debe tener 5 dígitos" : ""}
         />
       </div>
 

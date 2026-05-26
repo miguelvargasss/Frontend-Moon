@@ -29,9 +29,12 @@ export default function ProductBaseFields({
           variant="bordered"
           placeholder="Ej: Casaca Cuero"
           value={name}
-          onChange={(e) => onNameChange(e.target.value)}
+          onChange={(e) => onNameChange(e.target.value.slice(0, 30))}
+          maxLength={30}
           autoFocus
           classNames={{ inputWrapper: "border-default-200" }}
+          description={`${name.length}/30 caracteres`}
+          color={name.length === 30 ? 'warning' : 'default'}
         />
         <Select
           label="Categoría"

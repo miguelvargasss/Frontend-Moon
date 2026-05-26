@@ -21,6 +21,8 @@ interface Props {
   onClose: () => void;
 }
 
+const todayISO = () => new Date().toISOString().split('T')[0];
+
 export default function CouponModal({ coupon, onClose }: Props) {
   const { createCoupon, updateCoupon } = useCouponsStore();
   const { categories, fetchCategories } = useCategoriesStore();
@@ -65,6 +67,11 @@ export default function CouponModal({ coupon, onClose }: Props) {
   const handleSubmit = async () => {
     if (!code.trim() || !expirationDate || !couponQuantity || !discountAmount) {
       setError('Completa todos los campos obligatorios');
+      return;
+    }
+
+    if (expirationDate < todayISO()) {
+      setError('La fecha de expiración no puede ser una fecha pasada.');
       return;
     }
 
@@ -137,6 +144,7 @@ export default function CouponModal({ coupon, onClose }: Props) {
             type="date"
             value={expirationDate}
             onChange={(e) => setExpirationDate(e.target.value)}
+            min={todayISO()}
             variant="bordered"
             classNames={{ inputWrapper: 'border-default-200' }}
             isRequired

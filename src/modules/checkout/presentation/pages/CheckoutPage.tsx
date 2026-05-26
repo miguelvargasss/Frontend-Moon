@@ -181,18 +181,18 @@ export default function CheckoutPage() {
 
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <p className="text-sm font-semibold text-foreground">{addr.firstName} {addr.lastName}</p>
-                              {addr.dni && <Chip size="sm" variant="flat" className="h-5 text-[10px] bg-default-100">DNI: {addr.dni}</Chip>}
+                              <p className="text-sm font-semibold text-foreground truncate">{addr.firstName} {addr.lastName}</p>
+                              {addr.dni && <Chip size="sm" variant="flat" className="h-5 text-[10px] bg-default-100 shrink-0">DNI: {addr.dni}</Chip>}
                             </div>
-                            <p className="text-sm text-default-500 leading-relaxed">{addr.address}</p>
+                            <p className="text-sm text-default-500 leading-relaxed break-words line-clamp-2">{addr.address}</p>
                             {addr.reference && (
-                              <p className="text-xs text-default-400 mt-1">Ref: {addr.reference}</p>
+                              <p className="text-xs text-default-400 mt-1 line-clamp-1 italic">Ref: {addr.reference}</p>
                             )}
-                            <p className="text-xs text-default-400 mt-1">
+                            <p className="text-xs text-default-400 mt-1 truncate">
                               {addr.city}, {addr.region} {addr.codeZip ? `· CP ${addr.codeZip}` : ''}
                             </p>
-                            <p className="text-xs text-default-400 flex items-center gap-1 mt-1">
-                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                            <p className="text-xs text-default-400 flex items-center gap-1 mt-1 truncate">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
                               {addr.phone}
                             </p>
                           </div>

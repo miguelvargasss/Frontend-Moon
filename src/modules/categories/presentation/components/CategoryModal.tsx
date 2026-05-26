@@ -46,9 +46,12 @@ export default function CategoryModal({ category, onClose }: CategoryModalProps)
             variant="bordered"
             placeholder="Ej: Polos & Ropa"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => setName(e.target.value.slice(0, 20))}
+            maxLength={20}
             autoFocus
             classNames={{ inputWrapper: "border-default-200" }}
+            description={`${name.length}/20 caracteres`}
+            color={name.length === 20 ? 'warning' : 'default'}
             id="cat-name"
           />
 

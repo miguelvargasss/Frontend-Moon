@@ -154,11 +154,12 @@ export default function SingleProductForm({ product, categories, onClose }: Sing
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21,15 16,10 5,21" />
             </svg>
             Imágenes del producto
-            <span className="text-xs font-normal text-default-400">(máx. 5)</span>
+            <span className="text-xs font-normal text-default-400">(máx. 10)</span>
           </div>
           <ImageUploader
             existingImages={globalExisting}
             pendingFiles={globalPending}
+            maxImages={10}
             onAddFiles={(files) => setGlobalPending([...globalPending, ...files])}
             onRemovePending={(idx) => setGlobalPending(globalPending.filter((_, i) => i !== idx))}
             onRemoveExisting={handleRemoveExisting}
