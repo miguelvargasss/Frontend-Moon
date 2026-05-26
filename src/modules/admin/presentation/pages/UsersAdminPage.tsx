@@ -15,7 +15,8 @@ export default function UsersAdminPage() {
   const filtered = useMemo(() => {
     let list = users;
     if (roleFilter !== 'all') {
-      list = list.filter((u) => u.roleName === roleFilter);
+      const roleValue = roleFilter === 'client' ? 'comprador' : roleFilter;
+      list = list.filter((u) => u.roleName === roleValue);
     }
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -31,7 +32,7 @@ export default function UsersAdminPage() {
 
   // Summary metrics
   const totalUsers = users.length;
-  const totalClients = users.filter((u) => u.roleName === 'client').length;
+  const totalClients = users.filter((u) => u.roleName === 'comprador').length;
   const totalPoints = users.reduce((sum, u) => sum + (u.points ?? 0), 0);
 
   // Helpers
@@ -121,7 +122,7 @@ export default function UsersAdminPage() {
               )
             },
             {
-              key: 'client' as RoleFilter, label: 'Clientes', icon: (
+              key: 'client' as RoleFilter, label: 'Compradores', icon: (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
                 </svg>

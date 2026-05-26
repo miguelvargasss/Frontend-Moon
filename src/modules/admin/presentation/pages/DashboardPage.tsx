@@ -34,6 +34,8 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; chipColor: '
   'CANCELADO':   { label: 'Cancelado',   color: '#f31260', chipColor: 'danger'  },
 };
 
+const REVENUE_STATUSES = ['CONFIRMADO', 'ENVIADO', 'FINALIZADO'];
+
 export default function DashboardPage() {
   const { orders, fetchOrders }     = useAdminOrdersStore();
   const { users, fetchUsers }       = useUsersStore();
@@ -49,11 +51,11 @@ export default function DashboardPage() {
 
   /* ── KPI ── */
   const totalRevenue = useMemo(
-    () => orders.filter(o => o.statusName === 'FINALIZADO').reduce((s, o) => s + orderTotal(o), 0),
+    () => orders.filter(o => REVENUE_STATUSES.includes(o.statusName)).reduce((s, o) => s + orderTotal(o), 0),
     [orders],
   );
   const pendingOrders = useMemo(() => orders.filter(o => o.statusName === 'EN PROCESO').length, [orders]);
-  const totalClients  = useMemo(() => users.filter(u => u.roleName === 'client').length, [users]);
+  const totalClients  = useMemo(() => users.filter(u => u.roleName === 'comprador').length, [users]);
   const totalPoints   = useMemo(() => users.reduce((s, u) => s + (u.points ?? 0), 0), [users]);
 
   /* ── Order status breakdown ── */
@@ -79,7 +81,7 @@ export default function DashboardPage() {
 
   /* ── Top 3 clients ── */
   const topClients = useMemo(
-    () => [...users].filter(u => u.roleName === 'client').sort((a, b) => (b.points ?? 0) - (a.points ?? 0)).slice(0, 3),
+    () => [...users].filter(u => u.roleName === 'comprador').sort((a, b) => (b.points ?? 0) - (a.points ?? 0)).slice(0, 3),
     [users],
   );
 
@@ -116,11 +118,11 @@ export default function DashboardPage() {
       </div>
 
       {/* ── KPI Cards ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <KpiCard
           label="Ingresos totales"
           value={fmtCurrency(totalRevenue)}
-          sub="Pedidos finalizados"
+          sub="Confirmado · Enviado · Finalizado"
           accent="#17c964"
           icon={
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -136,18 +138,6 @@ export default function DashboardPage() {
           icon={
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><path d="M13 8h4M13 12h4M13 16h4"/>
-            </svg>
-          }
-        />
-        <KpiCard
-          label="Clientes"
-          value={String(totalClients)}
-          sub={`${users.length} usuarios totales`}
-          accent="#a855f7"
-          icon={
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
           }
         />
@@ -375,7 +365,7 @@ export default function DashboardPage() {
                 <p className="text-xs text-default-400 mt-0.5">Clientes</p>
               </div>
               <div className="flex-1 text-center p-3 rounded-xl bg-default-50 border border-default-200/50">
-                <p className="text-2xl font-bold text-foreground">{users.filter(u => u.roleName === 'admin').length}</p>
+                <p className="text-2xl font-bold text-foreground">{users.filter(u => u.roleName !== 'comprador').length}</p>
                 <p className="text-xs text-default-400 mt-0.5">Admins</p>
               </div>
             </div>
