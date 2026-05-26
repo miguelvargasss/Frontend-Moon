@@ -70,8 +70,13 @@ export default function CouponModal({ coupon, onClose }: Props) {
       return;
     }
 
-    if (expirationDate < todayISO()) {
-      setError('La fecha de expiración no puede ser una fecha pasada.');
+    if (code.trim().length > 25) {
+      setError('El código del cupón no debe exceder los 25 caracteres.');
+      return;
+    }
+
+    if (expirationDate !== todayISO()) {
+      setError('La fecha de expiración debe ser estrictamente la fecha de hoy.');
       return;
     }
 
@@ -133,10 +138,12 @@ export default function CouponModal({ coupon, onClose }: Props) {
             label="Codigo del cupon"
             placeholder="Ej: LUNA10"
             value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            onChange={(e) => setCode(e.target.value.toUpperCase().slice(0, 25))}
             variant="bordered"
             classNames={{ inputWrapper: 'border-default-200' }}
             isRequired
+            maxLength={25}
+            description={`${code.length}/25 caracteres`}
           />
 
           <Input
@@ -145,9 +152,11 @@ export default function CouponModal({ coupon, onClose }: Props) {
             value={expirationDate}
             onChange={(e) => setExpirationDate(e.target.value)}
             min={todayISO()}
+            max={todayISO()}
             variant="bordered"
             classNames={{ inputWrapper: 'border-default-200' }}
             isRequired
+            description="El cupón debe expirar hoy"
           />
 
           {/* Tipo de descuento */}

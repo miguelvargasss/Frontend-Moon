@@ -113,8 +113,8 @@ export default function CouponsAdminPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex flex-col gap-2">
                     {/* Code */}
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl font-bold font-mono tracking-widest text-foreground uppercase">
+                    <div className="flex items-center gap-2 max-w-full overflow-hidden">
+                      <span className="text-xl font-bold font-mono tracking-widest text-foreground uppercase truncate">
                         {coupon.code}
                       </span>
                       <button
