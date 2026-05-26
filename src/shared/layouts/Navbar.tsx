@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Navbar as NextUINavbar,
   NavbarBrand,
@@ -51,11 +51,8 @@ function CartBadge() {
  * IMPORTANTE: Navegación via useNavigate (no href) para evitar full-page reloads.
  */
 export default function Navbar() {
-  const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuthStore();
-
-  const isActive = (path: string) => location.pathname === path;
 
   const handleLogout = async () => {
     await logout();
