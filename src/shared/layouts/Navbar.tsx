@@ -103,22 +103,6 @@ export default function Navbar() {
         </div>
       </NavbarBrand>
 
-      {/* Center — Navigation Links */}
-      <NavbarContent className="hidden sm:flex gap-1" justify="center">
-        <NavbarItem>
-          <Link
-            to="/"
-            className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg no-underline transition-colors ${
-              isActive('/') ? 'text-primary bg-primary/10 font-semibold' : 'text-default-500 hover:text-foreground hover:bg-primary/[0.06]'
-            }`}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={isActive('/') ? 'opacity-100' : 'opacity-70'}>
-              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            </svg>
-            Tienda
-          </Link>
-        </NavbarItem>
-      </NavbarContent>
 
       {/* Right Section */}
       <NavbarContent justify="end" className="gap-3">

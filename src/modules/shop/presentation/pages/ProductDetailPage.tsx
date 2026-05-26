@@ -319,16 +319,13 @@ export default function ProductDetailPage() {
             {cartError && (
               <p className="text-xs text-danger mt-1">{cartError}</p>
             )}
-          </div>
-        </div>
-      </div>
 
-      {/* Accordions */}
-      {(product.description || specItems.length > 0) && (
-        <div className="border-t border-default-200 bg-default-50/30">
-          <div className="max-w-3xl mx-auto px-6 py-6">
-            <Accordion variant="bordered" defaultExpandedKeys={["desc", "specs"]} className="border-default-200">
-              {product.description ? (
+            {/* Accordions */}
+            {(product.description || specItems.length > 0) && (
+              <div className="border-t border-default-200 bg-default-50/30">
+                <div className="max-w-3xl mx-auto px-6 py-6">
+                <Accordion variant="bordered" defaultExpandedKeys={["desc", "specs"]} className="border-default-200">
+                    {product.description ? (
                 <AccordionItem
                   key="desc"
                   aria-label="Descripción"
@@ -343,8 +340,8 @@ export default function ProductDetailPage() {
                 >
                   <p className="text-sm text-default-600 leading-relaxed pb-2">{product.description}</p>
                 </AccordionItem>
-              ) : null!}
-              {specItems.length > 0 ? (
+                    ) : null!}
+                    {specItems.length > 0 ? (
                 <AccordionItem
                   key="specs"
                   aria-label="Especificaciones"
@@ -365,11 +362,15 @@ export default function ProductDetailPage() {
                     ))}
                   </ul>
                 </AccordionItem>
-              ) : null!}
-            </Accordion>
+                    ) : null!}
+                </Accordion>
+                </div>
+              </div>
+          )}
           </div>
         </div>
-      )}
+      </div>
+
 
       {/* Related Products */}
       <div className="border-t border-default-200 bg-background">
