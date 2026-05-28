@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button, Chip, Accordion, AccordionItem, Breadcrumbs, BreadcrumbItem } from '@nextui-org/react';
 import { useProducts } from '../../application/useProducts';
 import { useCategories } from '../../application/useCategories';
 import { useCartStore } from '../../../cart/application/cart.store';
 import { useAuthStore } from '../../../auth/application/auth.store';
+import CartToast from '../../../../shared/components/CartToast';
 
 /**
  * Página de detalle de un producto.
@@ -25,6 +26,10 @@ export default function ProductDetailPage() {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [adding, setAdding] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
+
+  const handleCloseToast = useCallback(() => setToastVisible(false), []);
+  const handleGoToCart = useCallback(() => { setToastVisible(false); navigate('/carrito'); }, [navigate]);
 
   const product = useMemo(() => products.find((p) => p.id === id), [products, id]);
 
@@ -147,6 +152,18 @@ export default function ProductDetailPage() {
   }
 
   return (
+    <>
+      {/* Toast de "Producto agregado" */}
+      <CartToast
+        visible={toastVisible}
+        productName={product.name}
+        productImage={displayImages[0]?.url}
+        price={displayPrice}
+        quantity={quantity}
+        onClose={handleCloseToast}
+        onGoToCart={handleGoToCart}
+      />
+
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Breadcrumb */}
@@ -161,10 +178,66 @@ export default function ProductDetailPage() {
         {/* Main */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* Gallery */}
-          <div className="flex flex-col gap-3">
-            <div className="relative aspect-square rounded-2xl overflow-hidden bg-default-100 border border-default-200">
+          <div className="flex flex-col-reverse md:flex-row gap-4">
+            {/* Thumbnails */}
+            {displayImages.length > 1 && (
+              <div className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-y-auto max-h-[500px] no-scrollbar shrink-0 md:w-20">
+                {displayImages.map((img, idx) => (
+                  <button
+                    key={img.id}
+                    className={`w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all ${idx === selectedImg ? 'border-primary shadow-sm' : 'border-default-100 hover:border-default-300'}`}
+                    onClick={() => setSelectedImg(idx)}
+                  >
+                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Main Image with Carousel Controls */}
+            <div className="relative group flex-1 aspect-square rounded-2xl overflow-hidden bg-default-50 border border-default-200">
               {displayImages.length > 0 ? (
-                <img src={displayImages[selectedImg]?.url} alt={product.name} className="w-full h-full object-cover" />
+                <>
+                  <img
+                    src={displayImages[selectedImg]?.url}
+                    alt={product.name}
+                    className="w-full h-full object-cover transition-opacity duration-300"
+                  />
+
+                  {/* Carousel Controls */}
+                  {displayImages.length > 1 && (
+                    <>
+                      <Button
+                        isIconOnly
+                        variant="flat"
+                        size="sm"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/60 backdrop-blur-md z-10"
+                        onPress={() => setSelectedImg((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1))}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6" /></svg>
+                      </Button>
+                      <Button
+                        isIconOnly
+                        variant="flat"
+                        size="sm"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/60 backdrop-blur-md z-10"
+                        onPress={() => setSelectedImg((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1))}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>
+                      </Button>
+
+                      {/* Pagination Indicator */}
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                        {displayImages.map((_, idx) => (
+                          <div
+                            key={idx}
+                            className={`h-1 rounded-full transition-all ${idx === selectedImg ? 'w-6 bg-primary' : 'w-2 bg-default-300'}`}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </>
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.2">
@@ -175,19 +248,6 @@ export default function ProductDetailPage() {
                 </div>
               )}
             </div>
-            {displayImages.length > 1 && (
-              <div className="flex gap-2">
-                {displayImages.map((img, idx) => (
-                  <button
-                    key={img.id}
-                    className={`w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${idx === selectedImg ? 'border-primary' : 'border-default-200 hover:border-default-400'}`}
-                    onClick={() => setSelectedImg(idx)}
-                  >
-                    <img src={img.url} alt="" className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Info */}
@@ -306,6 +366,9 @@ export default function ProductDetailPage() {
                 setAdding(true);
                 await addItem(product.id, quantity, selectedVariantId);
                 setAdding(false);
+                // Mostrar la notificación de producto agregado
+                setToastVisible(false);
+                setTimeout(() => setToastVisible(true), 30);
               }}
               startContent={
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -416,5 +479,6 @@ export default function ProductDetailPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
