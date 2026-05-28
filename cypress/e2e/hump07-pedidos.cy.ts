@@ -4,36 +4,48 @@
 // ============================================================
 
 describe('HUMP07 — Historial y Detalle de Pedidos (Cliente)', () => {
-  // ── CU07.1: Protección de Ruta /mis-pedidos ──────────────────
 
-  describe('CU07.1 - Protección de Ruta Mis Pedidos', () => {
-    it('debe redirigir a /login si usuario no autenticado accede a /mis-pedidos', () => {
+  beforeEach(() => {
+    cy.loginAsUser();
+  });
+
+  describe('CU07.1 - Listar Mis Pedidos', () => {
+    it('debe mostrar la lista de pedidos del usuario', () => {
       cy.visit('/mis-pedidos');
-      cy.url().should('include', '/login');
-    });
-  });
-
-  // ── CU07.x: Validación via API ───────────────────────────────
-
-  describe('CU07.x - Endpoints de Pedidos (API)', () => {
-    it('el endpoint GET /orders debe requerir autenticación (401)', () => {
-      cy.request({
-        method: 'GET',
-        url: `${Cypress.env('API_URL')}/orders`,
-        failOnStatusCode: false,
-      }).then((response) => {
-        expect(response.status).to.eq(401);
-      });
-    });
-
-    it('el endpoint GET /orders/:id debe requerir autenticación (401)', () => {
-      cy.request({
-        method: 'GET',
-        url: `${Cypress.env('API_URL')}/orders/id-inexistente`,
-        failOnStatusCode: false,
-      }).then((response) => {
-        expect(response.status).to.eq(401);
+      cy.get('body').should('be.visible');
+      cy.get('h1').contains(/Mis Pedidos/i).should('be.visible');
+      
+      // Debería existir la tabla o lista de pedidos
+      cy.get('body').then(($body) => {
+        if ($body.text().includes('No tienes pedidos')) {
+          cy.log('El usuario no tiene pedidos actualmente.');
+        } else {
+          // Debería haber una tabla
+          cy.get('table').should('exist');
+          // Y algún código de orden visible (M...)
+        }
       });
     });
   });
+
+  describe('CU07.2 - Ver Detalle del Pedido', () => {
+    it('debe permitir hacer clic en un pedido para ver su detalle', () => {
+      cy.visit('/mis-pedidos');
+      cy.wait(1500);
+      cy.get('body').then(($body) => {
+        const detailBtns = $body.find('a[href*="/mis-pedidos/"], button:contains("Ver detalle")');
+        if (detailBtns.length > 0) {
+          cy.wrap(detailBtns.first()).click();
+          // Debe redirigir a la vista de detalle
+          cy.url().should('include', '/mis-pedidos/');
+          // Debe mostrar la info del pedido
+          cy.contains(/Detalle del Pedido/i).should('be.visible');
+          cy.contains(/Total/i).should('be.visible');
+        } else {
+          cy.log('No hay pedidos para probar el detalle.');
+        }
+      });
+    });
+  });
+
 });

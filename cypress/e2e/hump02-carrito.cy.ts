@@ -4,58 +4,87 @@
 // ============================================================
 
 describe('HUMP02 — Carrito de Compras', () => {
-  // ── CU02.2: Listar ítems del carrito ─────────────────────────
 
-  describe('CU02.2 - Visualización del Carrito', () => {
-    it('debe mostrar el carrito vacío si el usuario no ha agregado productos', () => {
-      cy.visit('/carrito');
-      cy.get('body').should('be.visible');
-    });
-
-    it('debe mostrar la página del carrito con algún contenido de navegación', () => {
-      cy.visit('/carrito');
-      cy.wait(1500);
-      // La página debe tener al menos el título o algún texto de la sección del carrito
-      cy.get('body').should('not.be.empty');
-    });
+  beforeEach(() => {
+    cy.loginAsUser();
   });
 
-  // ── CU02.1: Añadir producto al Carrito ───────────────────────
-
-  describe('CU02.1 - Agregar Producto al Carrito (Catálogo)', () => {
-    it('debe mostrar el catálogo con contenido en la tienda', () => {
+  describe('CU02.1 - Añadir al Carrito', () => {
+    it('debe permitir añadir un producto al carrito desde su detalle', () => {
+      // Navegamos a un producto (asumiendo que existe alguno)
       cy.visit('/');
-      cy.get('body').should('be.visible');
-      cy.wait(2000);
-      cy.get('body').should('not.be.empty');
-    });
-
-    it('debe navegar al detalle de un producto al hacer clic en él', () => {
-      cy.visit('/');
-      cy.wait(3000);
+      cy.wait(2000); // Esperar a que carguen los productos
       cy.get('body').then(($body) => {
         const productLinks = $body.find('a[href*="/producto/"]');
         if (productLinks.length > 0) {
-          cy.wrap(productLinks.first()).click();
-          cy.url().should('include', '/producto/');
+          const href = productLinks.first().attr('href') as string;
+          cy.visit(href);
+          
+          // Aseguramos que cargue el detalle
+          cy.get('body').should('be.visible');
+          
+          // Opcional: seleccionar variante si existe (botones de talla o color)
+          // Se asume que el botón de agregar dice "Agregar al carrito"
+          cy.contains('button', /Agregar al carrito|Añadir/i).click();
+          
+          // Debería aparecer el Toast de éxito que implementamos
+          cy.contains(/Producto agregado|Ver carrito/i).should('be.visible');
         } else {
-          cy.log('No hay productos cargados — revisar conexión con la API');
+          cy.log('No hay productos para probar en el catálogo.');
         }
       });
     });
   });
 
-  // ── CU02.x: Validaciones de estado del carrito ───────────────
-
-  describe('CU02.x - Validaciones y Estado', () => {
-    it('debe mostrar la ruta /carrito sin redirección si el usuario no está autenticado', () => {
+  describe('CU02.2 - Listar ítems del Carrito', () => {
+    it('debe cargar la página del carrito y mostrar ítems si los hay', () => {
+      cy.intercept('GET', '**/cart').as('getCart');
       cy.visit('/carrito');
-      cy.url().should('include', '/carrito');
-    });
-
-    it('debe cargar correctamente la página del carrito', () => {
-      cy.visit('/carrito');
-      cy.get('body').should('be.visible');
+      cy.wait('@getCart');
+      
+      // Asegurarnos que la UI ha re-renderizado después de la carga
+      cy.contains(/Mi Carrito/i).should('be.visible');
+      
+      // Validar si hay ítems
+      cy.get('body').then(($body) => {
+        if ($body.text().includes('vacío')) {
+          cy.log('El carrito está vacío');
+        } else {
+          // Debería mostrar subtotales o un botón de Finalizar Compra
+          cy.contains(/Subtotal|Realizar pedido/i).should('be.visible');
+        }
+      });
     });
   });
+
+  describe('CU02.3 y CU02.4 - Actualizar y Eliminar del Carrito', () => {
+    it('debe permitir cambiar la cantidad de un ítem y eliminarlo', () => {
+      cy.intercept('GET', '**/cart').as('getCart');
+      cy.visit('/carrito');
+      cy.wait('@getCart');
+      cy.contains(/Mi Carrito/i).should('be.visible');
+      
+      cy.get('body').then(($body) => {
+        // Buscamos si hay un input de cantidad (generalmente un input numérico o botones + y -)
+        // En NextUI y tu implementación, puede ser botones o un input text/number
+        const quantityInputs = $body.find('input[type="number"], input[type="text"]');
+        if (quantityInputs.length > 0 && !$body.text().includes('vacío')) {
+          // Si el primer input es numérico y modificable
+          cy.wrap(quantityInputs.first()).clear().type('2').blur();
+          cy.wait(1000); // Esperar a que guarde la DB
+
+          // Buscamos botón de eliminar (icono de basurero o texto "Eliminar")
+          // Es más seguro buscar por aria-label="Eliminar" o similar, o svg de basurero
+          const deleteButtons = $body.find('button[aria-label*="liminar"], button[color="danger"], button[aria-label*="emove"]');
+          if (deleteButtons.length > 0) {
+            cy.wrap(deleteButtons.first()).click();
+            cy.wait(1000);
+          }
+        } else {
+          cy.log('No hay ítems en el carrito para actualizar o eliminar.');
+        }
+      });
+    });
+  });
+
 });

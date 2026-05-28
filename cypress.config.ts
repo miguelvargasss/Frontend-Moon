@@ -43,10 +43,10 @@ export default defineConfig({
     // URL base del API backend
     API_URL: 'http://localhost:3000',
     // Credenciales de usuario cliente de prueba (ajustar a las tuyas)
-    TEST_USER_EMAIL: 'testcliente@moonphases.com',
-    TEST_USER_PASSWORD: 'Test1234!',
+    TEST_USER_EMAIL: 'miguel@gmail.com',
+    TEST_USER_PASSWORD: '123456',
     // Credenciales de administrador de prueba
-    TEST_ADMIN_EMAIL: 'testadmin@moonphases.com',
-    TEST_ADMIN_PASSWORD: 'Admin1234!',
+    TEST_ADMIN_EMAIL: 'admin@moonphases.com',
+    TEST_ADMIN_PASSWORD: 'AdminPassword123!',
   },
 });

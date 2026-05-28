@@ -93,21 +93,16 @@ describe('HUMP03 — Checkout y Procesamiento de Ventas', () => {
       cy.wait(1500);
 
       // 3. Verificamos si podemos simular el flujo (requiere items en carrito)
+      // Como NextUI y el DOM pueden tardar en hidratar, usamos cy.get de Cypress que tiene retry
       cy.get('body').then(($body) => {
-        // Buscamos el botón que contenga "Confirmar" o "Finalizar"
-        const confirmBtn = $body.find('button:contains("Confirmar")');
-        
-        if (confirmBtn.length > 0) {
-          cy.wrap(confirmBtn).click();
+        if ($body.find('button:contains("Confirmar")').length > 0) {
+          cy.contains('button', 'Confirmar').click();
 
           // 4. Esperamos la llamada a la API y validamos la respuesta
           cy.wait('@crearOrden').then((interception) => {
-            // El backend procesa la transacción (validar stock, generar código, etc)
-            // Si la prueba no tiene auth/stock real, responderá con error, lo cual es esperado
             const status = interception.response?.statusCode;
             expect(status).to.be.oneOf([201, 400, 401]); 
             
-            // Si es 201 (creado), verificamos la estructura de la orden generada
             if (status === 201) {
               expect(interception.response?.body).to.have.property('orderCode');
               expect(interception.response?.body.status).to.eq('EN PROCESO');
@@ -141,86 +136,78 @@ describe('HUMP03 — Checkout y Procesamiento de Ventas', () => {
       // 1. Iniciar sesión con el usuario de prueba
       cy.loginAsUser('miguel@gmail.com', '123456');
 
-      // 2. Ir al catálogo y agregar un producto al carrito
+      // 2. Ir al catálogo y esperar que carguen los productos
+      cy.intercept('GET', '**/products*').as('getProducts');
       cy.visit('/');
+      cy.wait('@getProducts');
+
+      // Buscar el link del primer producto con retries automáticos de Cypress
+      cy.get('a[href*="/producto/"]').should('have.length.gt', 0).first().click();
+      cy.url().should('include', '/producto/');
+      cy.wait(1500);
+
+      // Hacemos clic en el botón de agregar al carrito DOS veces
+      // Esto es para asegurar que el subtotal supere los S/50 exigidos por el cupón "AMOR"
+      cy.contains(/agregar|añadir/i).click();
+      cy.wait(1000);
+      cy.contains(/agregar|añadir/i).click();
+      cy.wait(1000);
+
+      // 3. Ingresar al carrito y aplicar cupón
+      cy.intercept('GET', '**/cart').as('getCart');
+      cy.visit('/carrito');
+      cy.wait('@getCart');
+      cy.wait(1500);
+      
+      // Escribimos el cupón AMOR en el input y le damos a Aplicar
+      cy.get('input[placeholder*="LUNA10"]').type('AMOR');
+      cy.contains('button', 'Aplicar').click();
+      cy.wait(1500); // Esperamos a que la API valide el cupón y descuente
+
+      // Luego presionamos "Realizar pedido"
+      cy.contains(/realizar pedido/i).click();
+
+      // 4. En el checkout, manejar el formulario de dirección
       cy.wait(2000);
-
-      cy.get('body').then(($body) => {
-        const productLinks = $body.find('a[href*="/producto/"]');
-        if (productLinks.length > 0) {
-          cy.wrap(productLinks.first()).click();
-          cy.url().should('include', '/producto/');
+      cy.url().should('include', '/checkout');
+      
+      // Intentamos seleccionar o guardar la dirección (si existe)
+      cy.get('body').then(($checkoutBody) => {
+        const continuarEnvioBtn = $checkoutBody.find('button:contains("Continuar con este env"), button:contains("Guardar direcci")');
+        
+        if (continuarEnvioBtn.length > 0) {
+          cy.wrap(continuarEnvioBtn.first()).click();
           cy.wait(1500);
-
-          // Hacemos clic en el botón de agregar al carrito DOS veces
-          // Esto es para asegurar que el subtotal supere los S/50 exigidos por el cupón "AMOR"
-          cy.contains(/agregar|añadir/i).click();
-          cy.wait(1000);
-          cy.contains(/agregar|añadir/i).click();
-          cy.wait(1000);
-
-          // 3. Ingresar al carrito y aplicar cupón
-          cy.visit('/carrito');
-          cy.wait(1500);
-          
-          // Escribimos el cupón AMOR en el input y le damos a Aplicar
-          cy.get('input[placeholder*="LUNA10"]').type('AMOR');
-          cy.contains('button', 'Aplicar').click();
-          cy.wait(1500); // Esperamos a que la API valide el cupón y descuente
-
-          // Luego presionamos "Realizar pedido"
-          cy.contains(/realizar pedido/i).click();
-
-          // 4. En el checkout, manejar el formulario de dirección
-          cy.wait(2000);
-          cy.url().should('include', '/checkout');
-          
-          cy.get('body').then(($checkoutBody) => {
-            const continuarEnvioBtn = $checkoutBody.find('button:contains("Continuar con este env"), button:contains("Guardar direcci")');
-            
-            if (continuarEnvioBtn.length > 0) {
-              cy.wrap(continuarEnvioBtn.first()).click();
-              cy.wait(1500);
-            }
-
-            // 5. Confirmar Pedido e interceptar
-            cy.intercept('POST', '**/orders').as('createOrder');
-            cy.contains(/confirmar pedido/i).click();
-
-            // 6. Validamos la transacción con el Backend
-            // La respuesta real del backend es:
-            // { success: true, data: { order: { orderCode, status, ... }, total, discount, pointsEarned }, message }
-            cy.wait('@createOrder', { timeout: 10000 }).then((interception) => {
-              expect(interception.response?.statusCode).to.be.oneOf([200, 201]);
-              
-              const responseBody = interception.response?.body;
-              // Navegamos: body.data.order
-              const orderObj = responseBody?.data?.order;
-              
-              expect(orderObj, 'La orden debe existir en data.order').to.not.equal(undefined);
-              expect(orderObj).to.have.property('orderCode');
-              // El orderCode debe ser alfanumérico de 7 caracteres (ej: M892BGS)
-              expect(orderObj.orderCode).to.match(/^[A-Z0-9]{7}$/);
-              // Verificar que los moonpoints ganados están presentes
-              expect(responseBody.data).to.have.property('pointsEarned');
-              // Verificar que el total final y el descuento del cupón están presentes
-              expect(responseBody.data).to.have.property('total');
-              expect(responseBody.data).to.have.property('discount');
-            });
-
-            // 7. Validar que la UI muestra la pantalla de éxito "¡Pedido realizado!"
-            cy.contains(/pedido realizado/i, { timeout: 10000 }).should('be.visible');
-            
-            // 8. Hacer clic en "Ver mis pedidos" como indica la HU
-            cy.contains(/ver mis pedidos/i).click();
-            cy.wait(2000);
-
-            // Validamos que redirigió a la página de historial de pedidos
-            cy.url().should('include', '/mis-pedidos');
-          });
-        } else {
-          cy.log('⚠️ No se encontraron productos en el catálogo para probar el flujo.');
         }
+
+        // 5. Confirmar Pedido e interceptar
+        cy.intercept('POST', '**/orders').as('createOrder');
+        cy.contains(/confirmar pedido/i).click();
+
+        // 6. Validamos la transacción con el Backend
+        cy.wait('@createOrder', { timeout: 10000 }).then((interception) => {
+          expect(interception.response?.statusCode).to.be.oneOf([200, 201]);
+          
+          const responseBody = interception.response?.body;
+          const orderObj = responseBody?.data?.order;
+          
+          expect(orderObj, 'La orden debe existir en data.order').to.not.equal(undefined);
+          expect(orderObj).to.have.property('orderCode');
+          expect(orderObj.orderCode).to.match(/^[A-Z0-9]{7}$/);
+          expect(responseBody.data).to.have.property('pointsEarned');
+          expect(responseBody.data).to.have.property('total');
+          expect(responseBody.data).to.have.property('discount');
+        });
+
+        // 7. Validar que la UI muestra la pantalla de éxito "¡Pedido realizado!"
+        cy.contains(/pedido realizado/i, { timeout: 10000 }).should('be.visible');
+        
+        // 8. Hacer clic en "Ver mis pedidos" como indica la HU
+        cy.contains(/ver mis pedidos/i).click();
+        cy.wait(2000);
+
+        // Validamos que redirigió a la página de historial de pedidos
+        cy.url().should('include', '/mis-pedidos');
       });
     });
   });

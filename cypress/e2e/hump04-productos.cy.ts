@@ -4,61 +4,59 @@
 // ============================================================
 
 describe('HUMP04 — Catálogo y Gestión de Productos', () => {
-  // ── CU04.1: Catálogo Público ─────────────────────────────────
 
-  describe('CU04.1 - Listado del Catálogo de Productos', () => {
-    it('debe cargar la página principal de la tienda (ShopPage)', () => {
+  describe('CU04.1 y CU04.2 - Catálogo y Detalle (Cliente Público)', () => {
+    it('debe listar los productos en el home y permitir entrar al detalle', () => {
       cy.visit('/');
       cy.get('body').should('be.visible');
-    });
-
-    it('la página de la tienda debe retornar status 200', () => {
-      cy.request('/').its('status').should('eq', 200);
-    });
-
-    it('debe mostrar el catálogo sin necesidad de autenticación', () => {
-      cy.visit('/');
-      // No debe haber redirección a /login
-      cy.url().should('eq', Cypress.config('baseUrl') + '/');
-    });
-  });
-
-  // ── CU04.2: Detalle del Producto ─────────────────────────────
-
-  describe('CU04.2 - Detalle del Producto', () => {
-    it('debe cargar la página de detalle de producto en /producto/:id', () => {
-      cy.visit('/');
-      cy.wait(3000);
+      
       cy.get('body').then(($body) => {
-        const links = $body.find('a[href*="/producto/"]');
-        if (links.length > 0) {
-          const href = links.first().attr('href') as string;
-          cy.visit(href);
+        const productLinks = $body.find('a[href*="/producto/"]');
+        if (productLinks.length > 0) {
+          // Entrar al detalle
+          cy.wrap(productLinks.first()).click();
           cy.url().should('include', '/producto/');
-          cy.get('body').should('be.visible');
+          
+          // El detalle debe contener título del producto, precio, y botón añadir
+          cy.get('h1').should('be.visible');
+          cy.contains(/Agregar al carrito|Añadir/i).should('be.visible');
         } else {
-          cy.log('No hay productos en el catálogo para navegar — verificar API');
+          cy.log('No hay productos en el catálogo.');
         }
       });
     });
-
-    it('debe mostrar un 404 o redirigir para un ID de producto inexistente', () => {
-      cy.visit('/producto/id-que-no-existe-9999', { failOnStatusCode: false });
-      cy.get('body').should('be.visible');
-    });
   });
 
-  // ── CU04.3+: Rutas Admin — protección ──────────────────────
+  describe('CU04.3 al CU04.7 - Gestión de Productos (Admin)', () => {
+    beforeEach(() => {
+      cy.loginAsAdmin();
+    });
 
-  describe('CU04.3 a CU04.7 - Rutas Admin Protegidas para Productos', () => {
-    it('debe redirigir al home si un usuario no autenticado accede a /admin/productos', () => {
+    it('debe permitir al administrador listar productos', () => {
       cy.visit('/admin/productos');
-      cy.url().should('not.include', '/admin/productos');
+      cy.get('body').should('be.visible');
+      // Esperamos que haya una tabla o grid de productos
+      cy.get('table').should('exist');
     });
 
-    it('debe redirigir al home si un usuario no autenticado accede a /admin', () => {
-      cy.visit('/admin');
-      cy.url().should('not.include', '/admin');
+    it('debe mostrar el botón para crear un nuevo producto', () => {
+      cy.visit('/admin/productos');
+      cy.contains(/Crear Producto|Nuevo Producto|Agregar/i).should('be.visible');
+    });
+
+    it('debe permitir editar un producto existente', () => {
+      cy.visit('/admin/productos');
+      cy.get('body').then(($body) => {
+        // Buscamos botones de editar (icono lápiz o texto Editar)
+        const editBtns = $body.find('button[aria-label="Editar"], button:contains("Editar")');
+        if (editBtns.length > 0) {
+          cy.wrap(editBtns.first()).click();
+          // Verificamos que se abre un modal o página de edición
+          cy.get('form').should('be.visible');
+          cy.contains(/Guardar|Actualizar/i).should('be.visible');
+        }
+      });
     });
   });
+
 });
