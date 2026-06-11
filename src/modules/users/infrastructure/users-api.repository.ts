@@ -9,8 +9,18 @@ export const usersApi = {
   },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapUser(raw: any): AdminUserModel {
+interface UserRaw {
+  id: string;
+  name: string;
+  lastName: string;
+  email: string;
+  roleId: string;
+  roleName: string;
+  points?: string | number;
+  createdAt: string | Date;
+}
+
+function mapUser(raw: UserRaw): AdminUserModel {
   return {
     id: raw.id,
     name: raw.name,
@@ -19,6 +29,6 @@ function mapUser(raw: any): AdminUserModel {
     roleId: raw.roleId,
     roleName: raw.roleName,
     points: raw.points != null ? Number(raw.points) : undefined,
-    createdAt: raw.createdAt,
+    createdAt: raw.createdAt instanceof Date ? raw.createdAt.toISOString() : String(raw.createdAt),
   };
 }

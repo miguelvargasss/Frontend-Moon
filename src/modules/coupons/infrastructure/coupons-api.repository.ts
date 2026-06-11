@@ -26,14 +26,24 @@ export const couponsApi = {
   },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapCoupon(raw: any): CouponModel {
+interface CouponRaw {
+  id: string;
+  code: string;
+  expirationDate: string | Date;
+  couponQuantity: number;
+  minimumAmount?: number;
+  discountAmount: number;
+  discountType?: 'fixed' | 'percentage';
+  categoryId?: string;
+}
+
+function mapCoupon(raw: CouponRaw): CouponModel {
   return {
     id: raw.id,
     code: raw.code,
-    expirationDate: raw.expirationDate,
+    expirationDate: raw.expirationDate instanceof Date ? raw.expirationDate.toISOString() : String(raw.expirationDate),
     couponQuantity: raw.couponQuantity,
-    minimumAmount: raw.minimumAmount,
+    minimumAmount: raw.minimumAmount ?? 0,
     discountAmount: raw.discountAmount,
     discountType: raw.discountType ?? 'fixed',
     categoryId: raw.categoryId,

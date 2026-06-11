@@ -47,7 +47,7 @@ describe('HUMP11 — Direcciones de Envío (Cliente)', () => {
       cy.contains(addressLine).should('be.visible');
 
       // 3. Eliminar Dirección
-      cy.get('body').then(($bodyList) => {
+      cy.get('body').then(() => {
         const filaDir = cy.contains(addressLine).parent().parent();
         filaDir.find('button[aria-label="Eliminar"], button:contains("Eliminar")').first().click();
 

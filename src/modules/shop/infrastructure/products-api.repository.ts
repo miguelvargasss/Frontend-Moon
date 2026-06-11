@@ -1,27 +1,39 @@
 import apiClient from '../../../core/http/api-client';
 import type { Product, ProductImage, ProductVariant } from '../domain/product.model';
 
+interface ShopProductRaw {
+  id: string;
+  name: string;
+  productType?: 'single' | 'multiple';
+  price?: number | string;
+  stock?: number | string;
+  description?: string;
+  specification?: string;
+  sizeType?: string;
+  categoryId?: string;
+  statusId?: string;
+  images?: { id: string; url: string }[];
+  variants?: { id: string; sizeLabel?: string; color?: string; stock?: number | string; price?: number | string; sku?: string }[];
+  styles?: { id: string; name?: string; images?: { id: string; url: string }[]; variants?: { id: string; sizeLabel?: string; stock?: number | string; price?: number | string; sku?: string }[] }[];
+}
+
 /**
  * Normaliza la respuesta del backend al modelo de dominio del shop.
  * Soporta productos `single` y `multiple` (con `styles`).
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function normalizeProduct(raw: any): Product {
+function normalizeProduct(raw: ShopProductRaw): Product {
   const productType: 'single' | 'multiple' = raw.productType ?? 'single';
 
   // ── Imágenes ──
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const directImages: ProductImage[] = (raw.images ?? []).map((img: any) => ({
+  const directImages: ProductImage[] = (raw.images ?? []).map((img) => ({
     id: img.id,
     url: img.url,
     productId: raw.id,
   }));
 
   // Para multiple: aplanar imágenes de todos los estilos (primero las del primer estilo)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const styleImages: ProductImage[] = (raw.styles ?? []).flatMap((s: any) =>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (s.images ?? []).map((img: any) => ({
+  const styleImages: ProductImage[] = (raw.styles ?? []).flatMap((s) =>
+    (s.images ?? []).map((img) => ({
       id: img.id,
       url: img.url,
       productId: raw.id,
@@ -37,17 +49,14 @@ function normalizeProduct(raw: any): Product {
   let variants: ProductVariant[] = [];
 
   if (productType === 'multiple') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    variants = (raw.styles ?? []).flatMap((s: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sImages: ProductImage[] = (s.images ?? []).map((img: any) => ({
+    variants = (raw.styles ?? []).flatMap((s) => {
+      const sImages: ProductImage[] = (s.images ?? []).map((img) => ({
         id: img.id,
         url: img.url,
         productId: raw.id,
         variantId: s.id,
       }));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return (s.variants ?? []).map((v: any) => ({
+      return (s.variants ?? []).map((v) => ({
         id: v.id,
         size: v.sizeLabel ?? undefined,
         color: s.name ?? undefined,
@@ -58,8 +67,7 @@ function normalizeProduct(raw: any): Product {
       }));
     });
   } else {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    variants = (raw.variants ?? []).map((v: any) => ({
+    variants = (raw.variants ?? []).map((v) => ({
       id: v.id,
       size: v.sizeLabel ?? undefined,
       color: v.color ?? undefined,

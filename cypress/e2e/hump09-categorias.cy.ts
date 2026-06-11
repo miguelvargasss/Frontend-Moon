@@ -24,7 +24,7 @@ describe('HUMP09 — Gestión de Categorías (Admin)', () => {
       cy.contains(catName).should('be.visible');
 
       // 2. Editar
-      cy.get('body').then(($body) => {
+      cy.get('body').then(() => {
         // Asumiendo que la fila contiene el nombre de la categoría y un botón editar
         const fila = cy.contains(catName).parent();
         fila.find('button[aria-label="Editar"], button:contains("Editar")').click();

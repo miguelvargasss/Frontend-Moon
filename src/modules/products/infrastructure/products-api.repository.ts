@@ -96,43 +96,54 @@ export const productsApi = {
   },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapProduct(raw: any): ProductModel {
+interface AdminProductRaw {
+  id: string;
+  name: string;
+  productType?: 'single' | 'multiple';
+  price?: number | string;
+  stock?: number | string;
+  sku?: string;
+  description?: string;
+  specification?: string;
+  sizeSystemId?: string;
+  categoryId?: string;
+  statusId?: string;
+  images?: { id: string; url: string }[];
+  variants?: { id: string; sizeLabel?: string; color?: string; price?: number | string; stock?: number | string; sku?: string }[];
+  styles?: { id: string; name: string; colorHex?: string; images?: { id: string; url: string }[]; variants?: { id: string; sizeLabel?: string; color?: string; price?: number | string; stock?: number | string; sku?: string }[] }[];
+}
+
+function mapProduct(raw: AdminProductRaw): ProductModel {
   const productType = raw.productType ?? 'single';
 
   // Imágenes directas del producto (solo single)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const images: ProductImageModel[] = (raw.images ?? []).map((img: any) => ({
+  const images: ProductImageModel[] = (raw.images ?? []).map((img) => ({
     id: img.id,
     url: img.url,
   }));
 
   // Variantes directas del producto (solo single)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const variants: ProductVariantModel[] = (raw.variants ?? []).map((v: any) => ({
+  const variants: ProductVariantModel[] = (raw.variants ?? []).map((v) => ({
     id: v.id,
     sizeLabel: v.sizeLabel,
     color: v.color,
     price: Number(v.price),
-    stock: v.stock,
+    stock: Number(v.stock ?? 0),
     sku: v.sku,
   }));
 
   // Estilos (solo multiple)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const styles: ProductStyleModel[] = (raw.styles ?? []).map((s: any) => ({
+  const styles: ProductStyleModel[] = (raw.styles ?? []).map((s) => ({
     id: s.id,
     name: s.name,
     colorHex: s.colorHex,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    images: (s.images ?? []).map((img: any) => ({ id: img.id, url: img.url })),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    variants: (s.variants ?? []).map((v: any) => ({
+    images: (s.images ?? []).map((img) => ({ id: img.id, url: img.url })),
+    variants: (s.variants ?? []).map((v) => ({
       id: v.id,
       sizeLabel: v.sizeLabel,
       color: v.color,
       price: Number(v.price),
-      stock: v.stock,
+      stock: Number(v.stock ?? 0),
       sku: v.sku,
     })),
   }));
@@ -142,7 +153,7 @@ function mapProduct(raw: any): ProductModel {
   if (productType === 'single') {
     totalStock = variants.length > 0
       ? variants.reduce((sum, v) => sum + (v.stock ?? 0), 0)
-      : (raw.stock ?? 0);
+      : Number(raw.stock ?? 0);
   } else {
     totalStock = styles.reduce(
       (sum, s) => sum + s.variants.reduce((vs, v) => vs + (v.stock ?? 0), 0),

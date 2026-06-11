@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Sphere, MeshDistortMaterial, Stars } from '@react-three/drei';
 import * as THREE from 'three';
@@ -74,22 +74,19 @@ function NearParticles() {
   const particlesRef = useRef<THREE.Points>(null);
   const count = 50;
 
-  const positions = useMemo(() => {
+  const [positions] = useState(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
       // Distribuir en un área más concentrada alrededor de la luna
-      // eslint-disable-next-line react-hooks/purity
       const theta = Math.random() * Math.PI * 2;
-      // eslint-disable-next-line react-hooks/purity
       const phi = Math.acos(2 * Math.random() - 1);
-      // eslint-disable-next-line react-hooks/purity
       const r = 1.5 + Math.random() * 2.5;
       pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
       pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta) + 0.5;
       pos[i * 3 + 2] = r * Math.cos(phi) * 0.5;
     }
     return pos;
-  }, []);
+  });
 
   useFrame((state) => {
     if (!particlesRef.current) return;

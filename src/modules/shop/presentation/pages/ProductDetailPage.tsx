@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button, Chip, Accordion, AccordionItem, Breadcrumbs, BreadcrumbItem } from '@nextui-org/react';
@@ -22,8 +21,8 @@ export default function ProductDetailPage() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const [selectedImg, setSelectedImg] = useState(0);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [userSelectedSize, setSelectedSize] = useState<string | null>(null);
+  const [userSelectedColor, setSelectedColor] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [adding, setAdding] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
@@ -33,11 +32,16 @@ export default function ProductDetailPage() {
 
   const product = useMemo(() => products.find((p) => p.id === id), [products, id]);
 
-  useEffect(() => {
+  const [prevId, setPrevId] = useState(id);
+  if (id !== prevId) {
+    setPrevId(id);
     setSelectedImg(0);
     setSelectedSize(null);
     setSelectedColor(null);
     setQuantity(1);
+  }
+
+  useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [id]);
 
@@ -54,8 +58,11 @@ export default function ProductDetailPage() {
   }, [products, product]);
 
   const variants = useMemo(() => product?.variants ?? [], [product?.variants]);
-  const colors = [...new Set(variants.map((v) => v.color).filter(Boolean))] as string[];
-  const sizes = [...new Set(variants.map((v) => v.size).filter(Boolean))] as string[];
+  const colors = useMemo(() => [...new Set(variants.map((v) => v.color).filter(Boolean))] as string[], [variants]);
+  const sizes = useMemo(() => [...new Set(variants.map((v) => v.size).filter(Boolean))] as string[], [variants]);
+
+  const selectedSize = userSelectedSize || (sizes.length > 0 ? sizes[0] : null);
+  const selectedColor = userSelectedColor || (colors.length > 0 ? colors[0] : null);
 
   // Variante(s) que coinciden con la selección actual
   const matchingVariants = useMemo(() => {
@@ -109,14 +116,12 @@ export default function ProductDetailPage() {
     return matchingVariants[0]?.id;
   }, [variants.length, matchingVariants]);
 
-  useEffect(() => {
-    if (sizes.length > 0 && !selectedSize) setSelectedSize(sizes[0]);
-    if (colors.length > 0 && !selectedColor) setSelectedColor(colors[0]);
-  }, [sizes.length, colors.length]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
+  const [prevImageDeps, setPrevImageDeps] = useState("");
+  const currentImageDeps = `${displayImages.length}-${selectedSize}-${selectedColor}`;
+  if (currentImageDeps !== prevImageDeps) {
+    setPrevImageDeps(currentImageDeps);
     setSelectedImg(0);
-  }, [displayImages.length, selectedSize, selectedColor]);
+  }
 
   const specItems = product?.specification
     ? product.specification.split(/[·\n]/).map((s) => s.trim()).filter(Boolean)

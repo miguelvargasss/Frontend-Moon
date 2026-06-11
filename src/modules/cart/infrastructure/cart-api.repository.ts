@@ -1,12 +1,24 @@
 import apiClient from '../../../core/http/api-client';
 import type { CartItem } from '../domain/cart-item.model';
 
+interface CartItemRaw {
+  id: string;
+  userId: string;
+  productId: string;
+  quantity: number;
+  variantId?: string;
+  productName?: string;
+  productPrice?: number;
+  productImage?: string;
+  variantLabel?: string;
+  variantColor?: string;
+}
+
 /**
  * Mapea la respuesta del backend al modelo del frontend.
  * El backend ahora retorna datos enriquecidos del producto.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapCartItem(raw: any): CartItem {
+function mapCartItem(raw: CartItemRaw): CartItem {
   return {
     id: raw.id,
     userId: raw.userId,

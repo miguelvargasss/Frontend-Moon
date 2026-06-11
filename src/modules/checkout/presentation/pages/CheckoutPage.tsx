@@ -27,8 +27,7 @@ export default function CheckoutPage() {
   const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
   const [pointsEarned, setPointsEarned] = useState<number>(0);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { fetchAddresses().then(() => setAddressesLoaded(true)); }, []);
+  useEffect(() => { fetchAddresses().then(() => setAddressesLoaded(true)); }, [fetchAddresses]);
 
   // Auto-seleccionar si solo hay una dirección; mostrar formulario si no hay ninguna.
   // Solo actúa DESPUÉS de que fetchAddresses() haya resuelto para evitar que

@@ -1,8 +1,21 @@
 import apiClient from '../../../core/http/api-client';
 import type { ShippingAddress } from '../domain/shipping-address.model';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function mapAddress(raw: any): ShippingAddress {
+interface ShippingAddressRaw {
+  id: string;
+  userId: string;
+  firstName: string;
+  lastName: string;
+  address: string;
+  city: string;
+  region: string;
+  phone: string;
+  reference?: string;
+  codeZip?: string;
+  dni?: string;
+}
+
+function mapAddress(raw: ShippingAddressRaw): ShippingAddress {
   return {
     id: raw.id,
     userId: raw.userId,

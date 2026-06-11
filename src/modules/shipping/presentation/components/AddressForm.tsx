@@ -23,6 +23,10 @@ const DEPARTAMENTOS_PERU = [
   'Madre de Dios', 'Moquegua', 'Pasco', 'Piura', 'Puno', 'San Martín', 'Tacna', 'Tumbes', 'Ucayali'
 ];
 
+const phoneRegex = /^9\d{8}$/;
+const dniRegex = /^\d{8}$/;
+const zipRegex = /^\d{5}$/;
+
 export default function AddressForm({ onSubmit, onCancel, isLoading }: AddressFormProps) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -33,10 +37,6 @@ export default function AddressForm({ onSubmit, onCancel, isLoading }: AddressFo
   const [reference, setReference] = useState('');
   const [codeZip, setCodeZip] = useState('');
   const [dni, setDni] = useState('');
-
-  const phoneRegex = /^9\d{8}$/;
-  const dniRegex = /^\d{8}$/;
-  const zipRegex = /^\d{5}$/;
 
   const isValid = useMemo(() => {
     return (

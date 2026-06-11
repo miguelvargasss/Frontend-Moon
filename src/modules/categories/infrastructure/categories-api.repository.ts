@@ -2,6 +2,12 @@ import apiClient from '../../../core/http/api-client';
 import type { CategoryModel } from '../domain/category.model';
 import type { SizeSystemModel, SizeOptionModel } from '../../products/domain/product.model';
 
+interface CategoryRaw {
+  id: string;
+  name: string;
+  icon?: string;
+}
+
 /**
  * Repositorio API para categorías y sistemas de tallas.
  * Se comunica con el backend NestJS via Axios.
@@ -10,8 +16,7 @@ export const categoriesApi = {
   // ── Categorías ──
   async getAll(): Promise<CategoryModel[]> {
     const { data } = await apiClient.get('/categories');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (data.data ?? []).map((c: any) => ({
+    return (data.data ?? []).map((c: CategoryRaw) => ({
       id: c.id,
       name: c.name,
       icon: c.icon ?? 'package',

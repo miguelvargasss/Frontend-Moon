@@ -24,7 +24,7 @@ describe('HUMP10 — Gestión de Sistemas de Tallas (Admin)', () => {
       cy.contains(systemName).should('be.visible');
 
       // 2. Editar/Añadir Opción
-      cy.get('body').then(($body) => {
+      cy.get('body').then(() => {
         const fila = cy.contains(systemName).parent();
         // Clic en editar o en gestionar opciones
         fila.find('button[aria-label="Opciones"], button:contains("Opción"), button[aria-label="Editar"], button:contains("Editar")').first().click();

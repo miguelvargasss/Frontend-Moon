@@ -5,11 +5,8 @@
 // lo cual es requerido para que "declare global" funcione correctamente.
 // ============================================================
 
-export {};
-
 // ── Declaración de tipos ─────────────────────────────────────
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       /**
@@ -41,6 +38,7 @@ declare global {
     }
   }
 }
+export {};
 
 // ── Implementación de comandos ───────────────────────────────
 
