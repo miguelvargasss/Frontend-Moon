@@ -44,9 +44,9 @@ export default defineConfig({
     API_URL: 'http://localhost:3000',
     // Credenciales de usuario cliente de prueba (ajustar a las tuyas)
     TEST_USER_EMAIL: 'miguel@gmail.com',
-    TEST_USER_PASSWORD: '123456',
+    TEST_USER_PASSWORD: process.env.CYPRESS_TEST_USER_PASSWORD || '',
     // Credenciales de administrador de prueba
     TEST_ADMIN_EMAIL: 'admin@moonphases.com',
-    TEST_ADMIN_PASSWORD: 'AdminPassword123!',
+    TEST_ADMIN_PASSWORD: process.env.CYPRESS_TEST_ADMIN_PASSWORD || '',
   },
 });

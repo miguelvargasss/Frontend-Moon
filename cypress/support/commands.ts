@@ -1,9 +1,10 @@
 // ============================================================
 // cypress/support/commands.ts
 // Comandos personalizados reutilizables para todas las pruebas.
-// IMPORTANTE: El export {} convierte este archivo en un módulo ES,
+// IMPORTANTE: El import 'cypress' convierte este archivo en un módulo ES,
 // lo cual es requerido para que "declare global" funcione correctamente.
 // ============================================================
+import 'cypress';
 
 // ── Declaración de tipos ─────────────────────────────────────
 declare global {
@@ -38,7 +39,6 @@ declare global {
     }
   }
 }
-export {};
 
 // ── Implementación de comandos ───────────────────────────────
 
