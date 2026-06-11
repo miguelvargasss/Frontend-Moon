@@ -27,3 +27,8 @@ dist-ssr
 .env
 historias-de-usuario.md
 .env.local
+.cypress-ts-plugin.json
+.cypress.config.ts
+
+# Pruebas End-to-End
+cypress/
