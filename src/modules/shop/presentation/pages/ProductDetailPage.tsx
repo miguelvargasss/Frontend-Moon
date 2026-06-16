@@ -193,7 +193,7 @@ export default function ProductDetailPage() {
                     className={`w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all ${idx === selectedImg ? 'border-primary shadow-sm' : 'border-default-100 hover:border-default-300'}`}
                     onClick={() => setSelectedImg(idx)}
                   >
-                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                    <img src={img.url} alt={`Miniatura de ${product.name} - Imagen ${idx + 1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -217,6 +217,7 @@ export default function ProductDetailPage() {
                         variant="flat"
                         size="sm"
                         className="absolute left-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/60 backdrop-blur-md z-10"
+                        aria-label="Imagen anterior"
                         onPress={() => setSelectedImg((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1))}
                       >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6" /></svg>
@@ -226,6 +227,7 @@ export default function ProductDetailPage() {
                         variant="flat"
                         size="sm"
                         className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/60 backdrop-blur-md z-10"
+                        aria-label="Siguiente imagen"
                         onPress={() => setSelectedImg((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1))}
                       >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6" /></svg>

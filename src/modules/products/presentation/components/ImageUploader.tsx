@@ -40,10 +40,11 @@ export default function ImageUploader({
     <div className="flex flex-wrap gap-2 items-center">
       {existingImages.map((img) => (
         <div className={`relative ${imgSize} rounded-lg overflow-hidden border border-default-200`} key={img.id}>
-          <img src={img.url} alt="" className="w-full h-full object-cover" />
+          <img src={img.url} alt="Imagen guardada del producto" className="w-full h-full object-cover" />
           {onRemoveExisting && (
             <button
               type="button"
+              aria-label="Eliminar imagen guardada"
               className={`absolute top-0.5 right-0.5 ${btnSize} rounded-full bg-danger flex items-center justify-center`}
               onClick={() => onRemoveExisting(img.id)}
             >
@@ -56,9 +57,10 @@ export default function ImageUploader({
       ))}
       {pendingFiles.map((file, idx) => (
         <div className={`relative ${imgSize} rounded-lg overflow-hidden border border-default-200`} key={`pend-${idx}`}>
-          <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
+          <img src={URL.createObjectURL(file)} alt="Vista previa de imagen a subir" className="w-full h-full object-cover" />
           <button
             type="button"
+            aria-label="Eliminar imagen de vista previa"
             className={`absolute top-0.5 right-0.5 ${btnSize} rounded-full bg-danger flex items-center justify-center`}
             onClick={() => onRemovePending(idx)}
           >
@@ -71,7 +73,8 @@ export default function ImageUploader({
       {totalCount < maxImages && (
         <button
           type="button"
-          className={`${imgSize} rounded-lg border-2 border-dashed border-default-300 flex flex-col items-center justify-center gap-0.5 text-default-400 hover:border-primary/50 hover:text-primary transition-colors`}
+          aria-label="Subir nuevas imágenes"
+          className={`${imgSize} rounded-lg border-2 border-dashed border-default-300 flex flex-col items-center justify-center gap-0.5 text-default-400 hover:border-primary/50 hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
           onClick={() => fileRef.current?.click()}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

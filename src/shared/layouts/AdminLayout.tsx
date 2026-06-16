@@ -77,7 +77,7 @@ export default function AdminLayout() {
         <div className="flex flex-col flex-1 p-5 gap-6">
           {/* Logo */}
           <div className="flex items-center gap-2.5">
-            <svg width="28" height="28" viewBox="0 0 36 36" fill="none" className="drop-shadow-[0_0_8px_rgba(45,212,168,0.3)]">
+            <svg aria-hidden="true" focusable="false" width="28" height="28" viewBox="0 0 36 36" fill="none" className="drop-shadow-[0_0_8px_rgba(45,212,168,0.3)]">
               <circle cx="18" cy="18" r="16" stroke="#2dd4a8" strokeWidth="1.5" opacity="0.6" />
               <circle cx="18" cy="18" r="12" fill="#2dd4a8" opacity="0.15" />
               <path d="M24 18c0-3.314-2.686-6-6-6-1.5 0-2.87.553-3.92 1.464C15.68 11.308 18.5 10 21.6 10c4.862 0 8.4 3.538 8.4 8.4 0 3.1-1.308 5.92-3.464 7.52A5.974 5.974 0 0 0 24 18z" fill="#2dd4a8" opacity="0.8" />
@@ -121,7 +121,12 @@ export default function AdminLayout() {
             content: "bg-moon-bg-secondary/95 backdrop-blur-xl border border-[--glass-border] shadow-[0_12px_40px_rgba(0,0,0,0.5)]",
           }}>
             <DropdownTrigger>
-              <button className="flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-primary/[0.06] transition-colors cursor-pointer" id="admin-user-menu-btn">
+              <button
+                className="flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-primary/[0.06] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                id="admin-user-menu-btn"
+                aria-label={`Menú de ${user?.name}`}
+                aria-haspopup="true"
+              >
                 <Avatar
                   name={user?.name?.charAt(0).toUpperCase()}
                   size="sm"
@@ -158,9 +163,9 @@ export default function AdminLayout() {
           </Dropdown>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <main id="main-content" className="flex-1 overflow-y-auto p-6" tabIndex={-1}>
           <Outlet />
-        </div>
+        </main>
       </div>
     </div>
   );

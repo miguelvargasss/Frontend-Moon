@@ -70,9 +70,12 @@ export default function CartToast({
         .toast-btn-cart:hover { opacity: 0.88; }
       `}</style>
 
+      {/* Region aria-live siempre presente en el DOM – se anuncia cuando cambia el contenido */}
       <div
-        role="alert"
+        role="status"
         aria-live="polite"
+        aria-atomic="true"
+        aria-label="Notificación de carrito de compras"
         className={`cart-toast-enter`}
         style={{
           position: 'fixed',
@@ -118,7 +121,7 @@ export default function CartToast({
             justifyContent: 'center',
             flexShrink: 0,
           }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00d97e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00d97e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
@@ -172,7 +175,7 @@ export default function CartToast({
 
         {/* Footer con botón */}
         <div style={{ padding: '0 16px 14px', display: 'flex', justifyContent: 'flex-end' }}>
-          <button className="toast-btn-cart" onClick={onGoToCart}>
+          <button className="toast-btn-cart" onClick={onGoToCart} aria-label="Ir al carrito de compras">
             Ver carrito →
           </button>
         </div>

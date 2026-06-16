@@ -4,9 +4,9 @@ import type { AdminOrder } from '../../../orders/domain/admin-order.model';
 import { useAdminOrdersStore } from '../../../orders/application/admin-orders.store';
 
 interface OrderDetailModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  order: AdminOrder;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly order: AdminOrder;
 }
 
 /** Flujo lógico de estados (excluye CANCELADO, que es una acción separada) */

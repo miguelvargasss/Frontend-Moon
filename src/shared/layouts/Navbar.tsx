@@ -89,7 +89,7 @@ export default function Navbar() {
     >
       {/* Logo */}
       <NavbarBrand as={Link} to="/" className="gap-2 no-underline">
-        <svg className="drop-shadow-[0_0_8px_rgba(45,212,168,0.3)]" width="32" height="32" viewBox="0 0 36 36" fill="none">
+        <svg aria-hidden="true" focusable="false" className="drop-shadow-[0_0_8px_rgba(45,212,168,0.3)]" width="32" height="32" viewBox="0 0 36 36" fill="none">
           <circle cx="18" cy="18" r="16" stroke="#2dd4a8" strokeWidth="1.5" opacity="0.6" />
           <circle cx="18" cy="18" r="12" fill="#2dd4a8" opacity="0.15" />
           <path d="M24 18c0-3.314-2.686-6-6-6-1.5 0-2.87.553-3.92 1.464C15.68 11.308 18.5 10 21.6 10c4.862 0 8.4 3.538 8.4 8.4 0 3.1-1.308 5.92-3.464 7.52A5.974 5.974 0 0 0 24 18z" fill="#2dd4a8" opacity="0.8" />
@@ -114,7 +114,12 @@ export default function Navbar() {
               content: "bg-moon-bg-secondary/95 backdrop-blur-xl border border-[--glass-border] shadow-[0_12px_40px_rgba(0,0,0,0.5),0_0_60px_rgba(45,212,168,0.04)]",
             }}>
               <DropdownTrigger>
-                <button className="flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-primary/[0.06] transition-colors cursor-pointer" id="navbar-user-menu-btn">
+                <button
+                  className="flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-primary/[0.06] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded-xl"
+                  id="navbar-user-menu-btn"
+                  aria-label={`Menú de ${user.name}`}
+                  aria-haspopup="true"
+                >
                   <Avatar
                     name={user.name?.charAt(0).toUpperCase()}
                     size="sm"
@@ -123,7 +128,7 @@ export default function Navbar() {
                     }}
                   />
                   <span className="hidden sm:block text-sm font-medium text-foreground max-w-[120px] truncate">{user.name}</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-default-400 hidden sm:block">
+                  <svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-default-400 hidden sm:block">
                     <polyline points="6,9 12,15 18,9" />
                   </svg>
                 </button>
