@@ -187,7 +187,7 @@ export default function CouponsAdminPage() {
                         width: `${Math.min(usagePercent, 100)}%`,
                         background:
                           status.color === 'success'
-                            ? 'linear-gradient(90deg, #2dd4a8, #34d399)'
+                            ? 'linear-gradient(90deg, #99f6e4, #5eead4)'
                             : status.color === 'warning'
                             ? 'linear-gradient(90deg, #f5a623, #f59e0b)'
                             : 'linear-gradient(90deg, #ef4444, #f87171)',

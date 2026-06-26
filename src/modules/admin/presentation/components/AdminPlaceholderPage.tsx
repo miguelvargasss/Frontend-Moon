@@ -23,7 +23,7 @@ export default function AdminPlaceholderPage({
       <div className="flex items-center justify-center py-12">
         <Card shadow="none" className="border border-default-200 max-w-md w-full">
           <CardBody className="items-center gap-4 py-8">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#2dd4a8" strokeWidth="1.5" opacity="0.6">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#99f6e4" strokeWidth="1.5" opacity="0.6">
               <rect x="3" y="3" width="7" height="9" rx="1" />
               <rect x="14" y="3" width="7" height="5" rx="1" />
               <rect x="14" y="12" width="7" height="9" rx="1" />

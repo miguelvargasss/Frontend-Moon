@@ -17,9 +17,9 @@ export default function MainLayout() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-3">
           <div className="flex items-center gap-2">
             <svg aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 36 36" fill="none">
-              <circle cx="18" cy="18" r="16" stroke="#2dd4a8" strokeWidth="1.5" opacity="0.6" />
-              <circle cx="18" cy="18" r="12" fill="#2dd4a8" opacity="0.15" />
-              <path d="M24 18c0-3.314-2.686-6-6-6-1.5 0-2.87.553-3.92 1.464C15.68 11.308 18.5 10 21.6 10c4.862 0 8.4 3.538 8.4 8.4 0 3.1-1.308 5.92-3.464 7.52A5.974 5.974 0 0 0 24 18z" fill="#2dd4a8" opacity="0.8" />
+              <circle cx="18" cy="18" r="16" stroke="#99f6e4" strokeWidth="1.5" opacity="0.6" />
+              <circle cx="18" cy="18" r="12" fill="#99f6e4" opacity="0.15" />
+              <path d="M24 18c0-3.314-2.686-6-6-6-1.5 0-2.87.553-3.92 1.464C15.68 11.308 18.5 10 21.6 10c4.862 0 8.4 3.538 8.4 8.4 0 3.1-1.308 5.92-3.464 7.52A5.974 5.974 0 0 0 24 18z" fill="#99f6e4" opacity="0.8" />
             </svg>
             <div className="flex flex-col leading-none">
               <span className="font-display text-sm font-semibold text-foreground">moon</span>

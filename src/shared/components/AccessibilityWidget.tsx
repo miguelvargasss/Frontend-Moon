@@ -18,7 +18,7 @@ const DEFAULT_PREFS: A11yPreferences = {
 
 // ── Configuración de modos de color ────────────────────────────────────
 const COLOR_MODES: { id: ColorMode; label: string; desc: string; swatch: string }[] = [
-  { id: 'normal',         label: 'Normal',          desc: 'Colores originales',                    swatch: 'linear-gradient(135deg,#2dd4a8,#06090a)' },
+  { id: 'normal',         label: 'Normal',          desc: 'Colores originales',                    swatch: 'linear-gradient(135deg,#99f6e4,#0A0F1E)' },
   { id: 'alto-contraste', label: 'Alto contraste',  desc: 'Para baja visión',                      swatch: 'linear-gradient(135deg,#fff700,#000)' },
   { id: 'escala-grises',  label: 'Escala de grises',desc: 'Sin colores',                           swatch: 'linear-gradient(135deg,#fff,#555)' },
   { id: 'deuteranopia',   label: 'Deuteranopía',    desc: 'Daltonismo rojo-verde (más común)',     swatch: 'linear-gradient(135deg,#5b92ff,#a67c00)' },
@@ -170,7 +170,7 @@ export default function AccessibilityWidget() {
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <svg aria-hidden="true" focusable="false" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2dd4a8" strokeWidth="2">
+                <svg aria-hidden="true" focusable="false" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#99f6e4" strokeWidth="2">
                   <circle cx="12" cy="12" r="3"/>
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                 </svg>
@@ -193,7 +193,7 @@ export default function AccessibilityWidget() {
                   fontFamily: 'Outfit,sans-serif',
                   transition: 'all 0.15s',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.color = '#2dd4a8'; e.currentTarget.style.borderColor = 'rgba(45,212,168,0.4)'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = '#99f6e4'; e.currentTarget.style.borderColor = 'rgba(45,212,168,0.4)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
               >
                 Restablecer
@@ -229,7 +229,7 @@ export default function AccessibilityWidget() {
                         gap: '6px',
                         padding: '10px',
                         borderRadius: '10px',
-                        border: `1.5px solid ${active ? '#2dd4a8' : 'rgba(255,255,255,0.08)'}`,
+                        border: `1.5px solid ${active ? '#99f6e4' : 'rgba(255,255,255,0.08)'}`,
                         background: active ? 'rgba(45,212,168,0.08)' : 'rgba(255,255,255,0.02)',
                         cursor: 'pointer',
                         transition: 'all 0.15s',
@@ -248,7 +248,7 @@ export default function AccessibilityWidget() {
                         fontFamily: 'Outfit,sans-serif',
                         fontSize: '0.75rem',
                         fontWeight: active ? 600 : 400,
-                        color: active ? '#2dd4a8' : '#e2e8f0',
+                        color: active ? '#99f6e4' : '#e2e8f0',
                         lineHeight: 1.2,
                       }}>
                         {mode.label}
@@ -285,7 +285,7 @@ export default function AccessibilityWidget() {
                         flex: 1,
                         padding: '10px 8px',
                         borderRadius: '10px',
-                        border: `1.5px solid ${active ? '#2dd4a8' : 'rgba(255,255,255,0.08)'}`,
+                        border: `1.5px solid ${active ? '#99f6e4' : 'rgba(255,255,255,0.08)'}`,
                         background: active ? 'rgba(45,212,168,0.08)' : 'rgba(255,255,255,0.02)',
                         cursor: 'pointer',
                         transition: 'all 0.15s',
@@ -297,7 +297,7 @@ export default function AccessibilityWidget() {
                     >
                       <span style={{
                         fontSize: size.id === 'normal' ? '1rem' : size.id === 'grande' ? '1.25rem' : '1.5rem',
-                        color: active ? '#2dd4a8' : '#e2e8f0',
+                        color: active ? '#99f6e4' : '#e2e8f0',
                         lineHeight: 1,
                         fontFamily: 'Outfit,sans-serif',
                       }}>
@@ -305,7 +305,7 @@ export default function AccessibilityWidget() {
                       </span>
                       <span style={{
                         fontSize: '0.68rem',
-                        color: active ? '#2dd4a8' : 'rgba(255,255,255,0.4)',
+                        color: active ? '#99f6e4' : 'rgba(255,255,255,0.4)',
                         fontFamily: 'Outfit,sans-serif',
                         fontWeight: active ? 600 : 400,
                       }}>
@@ -345,7 +345,7 @@ export default function AccessibilityWidget() {
             height: '52px',
             borderRadius: '50%',
             background: open
-              ? 'linear-gradient(135deg,#2dd4a8,#34d399)'
+              ? 'linear-gradient(135deg,#99f6e4,#5eead4)'
               : 'rgba(13,26,20,0.95)',
             border: `2px solid ${open ? 'transparent' : 'rgba(45,212,168,0.4)'}`,
             boxShadow: open
@@ -366,7 +366,7 @@ export default function AccessibilityWidget() {
             height="24"
             viewBox="0 0 24 24"
             fill="none"
-            stroke={open ? '#060b09' : '#2dd4a8'}
+            stroke={open ? '#0A0F1E' : '#99f6e4'}
             strokeWidth="1.8"
           >
             {open ? (

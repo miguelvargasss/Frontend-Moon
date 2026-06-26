@@ -19,7 +19,7 @@ function Moon() {
       <Sphere ref={meshRef} args={[0.9, 64, 64]}>
         <MeshDistortMaterial
           color="#1a3a2a"
-          emissive="#2dd4a8"
+          emissive="#99f6e4"
           emissiveIntensity={0.12}
           roughness={0.85}
           metalness={0.1}
@@ -31,7 +31,7 @@ function Moon() {
       {/* Glow alrededor de la luna */}
       <Sphere args={[0.95, 32, 32]}>
         <meshBasicMaterial
-          color="#2dd4a8"
+          color="#99f6e4"
           transparent
           opacity={0.04}
           side={THREE.BackSide}
@@ -41,7 +41,7 @@ function Moon() {
       {/* Glow exterior más grande y difuso */}
       <Sphere args={[1.2, 32, 32]}>
         <meshBasicMaterial
-          color="#2dd4a8"
+          color="#99f6e4"
           transparent
           opacity={0.015}
           side={THREE.BackSide}
@@ -64,7 +64,7 @@ function OrbitalRing() {
   return (
     <mesh ref={ringRef} position={[0, 0.5, 0]}>
       <torusGeometry args={[1.5, 0.008, 16, 120]} />
-      <meshBasicMaterial color="#2dd4a8" transparent opacity={0.25} />
+      <meshBasicMaterial color="#99f6e4" transparent opacity={0.25} />
     </mesh>
   );
 }
@@ -99,7 +99,7 @@ function NearParticles() {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        color="#2dd4a8"
+        color="#99f6e4"
         size={0.02}
         transparent
         opacity={0.5}
@@ -139,7 +139,7 @@ export default function MoonScene() {
           intensity={1.2}
           color="#ffffff"
         />
-        <pointLight position={[-4, 1, -2]} intensity={0.15} color="#2dd4a8" />
+        <pointLight position={[-4, 1, -2]} intensity={0.15} color="#99f6e4" />
         <pointLight position={[1, -3, 2]} intensity={0.08} color="#115e4a" />
 
         {/* Escena */}

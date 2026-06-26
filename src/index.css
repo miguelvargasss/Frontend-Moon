@@ -4,7 +4,7 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── Google Fonts (must be first) ────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Manrope:wght@200..800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -12,11 +12,11 @@
 
 /* ── CSS Custom Properties (Design Tokens) ────────────────────────── */
 :root {
-  --accent-glow: rgba(45, 212, 168, 0.4);
-  --glass-bg: rgba(13, 26, 20, 0.65);
-  --glass-bg-hover: rgba(13, 26, 20, 0.8);
-  --glass-border: rgba(45, 212, 168, 0.12);
-  --glass-border-hover: rgba(45, 212, 168, 0.25);
+  --accent-glow: rgba(153, 246, 228, 0.4);
+  --glass-bg: rgba(10, 15, 30, 0.65);
+  --glass-bg-hover: rgba(10, 15, 30, 0.8);
+  --glass-border: rgba(153, 246, 228, 0.12);
+  --glass-border-hover: rgba(153, 246, 228, 0.25);
 }
 
 /* ── Base overrides ──────────────────────────────────────────────── */
@@ -27,7 +27,7 @@ html {
 }
 
 body {
-  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  font-family: 'Manrope', system-ui, -apple-system, sans-serif;
 }
 
 /* ── Accesibilidad: Focus visible global (WCAG 2.4.7 – Nivel AA) ─────
@@ -36,7 +36,7 @@ body {
    gracias a :focus-visible (vs el obsoleto :focus).
    ──────────────────────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #2dd4a8;
+  outline: 2px solid #99f6e4;
   outline-offset: 3px;
   border-radius: 6px;
 }
@@ -87,19 +87,19 @@ body {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #2dd4a8, #0d1a14);
-  box-shadow: 0 0 30px var(--accent-glow), 0 0 60px rgba(45, 212, 168, 0.15);
+  background: radial-gradient(circle at 35% 35%, #99f6e4, #0A0F1E);
+  box-shadow: 0 0 30px var(--accent-glow), 0 0 60px rgba(153, 246, 228, 0.15);
   animation: pulse-moon 2s ease-in-out infinite;
 }
 
 @keyframes pulse-moon {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 0 30px var(--accent-glow), 0 0 60px rgba(45, 212, 168, 0.15);
+    box-shadow: 0 0 30px var(--accent-glow), 0 0 60px rgba(153, 246, 228, 0.15);
   }
   50% {
     transform: scale(1.1);
-    box-shadow: 0 0 50px var(--accent-glow), 0 0 100px rgba(45, 212, 168, 0.25);
+    box-shadow: 0 0 50px var(--accent-glow), 0 0 100px rgba(153, 246, 228, 0.25);
   }
 }
 
@@ -111,24 +111,24 @@ body {
 .hero-stars-1 {
   background-image:
     radial-gradient(1.5px 1.5px at 8% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
-    radial-gradient(1px 1px at 22% 45%, rgba(45,212,168,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 22% 45%, rgba(153,246,228,0.5) 0%, transparent 100%),
     radial-gradient(1.5px 1.5px at 35% 80%, rgba(255,255,255,0.4) 0%, transparent 100%),
-    radial-gradient(1px 1px at 48% 25%, rgba(45,212,168,0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 48% 25%, rgba(153,246,228,0.35) 0%, transparent 100%),
     radial-gradient(2px 2px at 60% 65%, rgba(255,255,255,0.5) 0%, transparent 100%),
-    radial-gradient(1px 1px at 75% 10%, rgba(45,212,168,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 75% 10%, rgba(153,246,228,0.4) 0%, transparent 100%),
     radial-gradient(1.5px 1.5px at 88% 50%, rgba(255,255,255,0.45) 0%, transparent 100%),
-    radial-gradient(1px 1px at 95% 85%, rgba(45,212,168,0.3) 0%, transparent 100%);
+    radial-gradient(1px 1px at 95% 85%, rgba(153,246,228,0.3) 0%, transparent 100%);
   animation: starTwinkle1 4s ease-in-out infinite alternate;
 }
 
 .hero-stars-2 {
   background-image:
     radial-gradient(1px 1px at 12% 70%, rgba(255,255,255,0.35) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 28% 20%, rgba(45,212,168,0.45) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 28% 20%, rgba(153,246,228,0.45) 0%, transparent 100%),
     radial-gradient(1px 1px at 42% 55%, rgba(255,255,255,0.3) 0%, transparent 100%),
-    radial-gradient(2px 2px at 55% 90%, rgba(45,212,168,0.4) 0%, transparent 100%),
+    radial-gradient(2px 2px at 55% 90%, rgba(153,246,228,0.4) 0%, transparent 100%),
     radial-gradient(1px 1px at 68% 35%, rgba(255,255,255,0.5) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 82% 75%, rgba(45,212,168,0.35) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 82% 75%, rgba(153,246,228,0.35) 0%, transparent 100%),
     radial-gradient(1px 1px at 92% 15%, rgba(255,255,255,0.4) 0%, transparent 100%);
   animation: starTwinkle2 6s ease-in-out infinite alternate;
   animation-delay: -2s;
@@ -137,11 +137,11 @@ body {
 .hero-stars-3 {
   background-image:
     radial-gradient(1px 1px at 5% 40%, rgba(255,255,255,0.25) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 18% 90%, rgba(45,212,168,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 18% 90%, rgba(153,246,228,0.3) 0%, transparent 100%),
     radial-gradient(1px 1px at 38% 10%, rgba(255,255,255,0.35) 0%, transparent 100%),
-    radial-gradient(1px 1px at 52% 75%, rgba(45,212,168,0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 52% 75%, rgba(153,246,228,0.25) 0%, transparent 100%),
     radial-gradient(2px 2px at 72% 50%, rgba(255,255,255,0.45) 0%, transparent 100%),
-    radial-gradient(1px 1px at 85% 30%, rgba(45,212,168,0.35) 0%, transparent 100%);
+    radial-gradient(1px 1px at 85% 30%, rgba(153,246,228,0.35) 0%, transparent 100%);
   animation: starTwinkle3 8s ease-in-out infinite alternate;
   animation-delay: -4s;
 }
@@ -176,11 +176,11 @@ body {
 .auth-stars {
   @apply absolute inset-0 pointer-events-none;
   background-image:
-    radial-gradient(1px 1px at 10% 20%, rgba(45,212,168,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 20%, rgba(153,246,228,0.3) 0%, transparent 100%),
     radial-gradient(1.5px 1.5px at 30% 70%, rgba(255,255,255,0.2) 0%, transparent 100%),
-    radial-gradient(1px 1px at 50% 40%, rgba(45,212,168,0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 40%, rgba(153,246,228,0.25) 0%, transparent 100%),
     radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.15) 0%, transparent 100%),
-    radial-gradient(1.5px 1.5px at 90% 30%, rgba(45,212,168,0.2) 0%, transparent 100%);
+    radial-gradient(1.5px 1.5px at 90% 30%, rgba(153,246,228,0.2) 0%, transparent 100%);
   animation: starTwinkle1 6s ease-in-out infinite alternate;
 }
 
@@ -196,13 +196,13 @@ body {
 
 /* ── Scrollbar ───────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #060b09; }
+::-webkit-scrollbar-track { background: #0A0F1E; }
 ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: #2dd4a8; }
+::-webkit-scrollbar-thumb:hover { background: #99f6e4; }
 
 /* ── Selection ───────────────────────────────────────────────────── */
 ::selection {
-  background: rgba(45, 212, 168, 0.25);
+  background: rgba(153, 246, 228, 0.25);
   color: #e2e8f0;
 }
 
