@@ -31,4 +31,6 @@ historias-de-usuario.md
 .cypress.config.ts
 
 # Pruebas End-to-End
-cypress/
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
