@@ -101,9 +101,6 @@ body {
 }
 
 /* El widget en sí no debería invertirse internamente si se ve feo, pero por ahora lo invertimos todo */
-.a11y-modo-claro .a11y-lang-flash-dark {
-  filter: invert(1);
-}
 
 /* ── Loader (used by Suspense fallback) ──────────────────────────── */
 .loader-moon {
@@ -266,15 +263,6 @@ body {
   position: fixed;
   inset: 0;
   background: white;
-  z-index: 999999;
-  pointer-events: none;
-  animation: langFlash 0.6s ease-in-out forwards;
-}
-
-.a11y-lang-flash-dark {
-  position: fixed;
-  inset: 0;
-  background: #000;
   z-index: 999999;
   pointer-events: none;
   animation: langFlash 0.6s ease-in-out forwards;

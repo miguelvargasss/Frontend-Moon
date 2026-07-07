@@ -103,9 +103,6 @@ export const qu: Record<string, string> = {
   'a11y.open': 'Rikuy yanapakuy akllasqakunata kichay',
   'a11y.close': 'Yanapakuy akllasqakunata wisq\'ay',
   'a11y.textSize': 'Qillqa sayaynin',
-  'a11y.flashEffect': 'T\'inkiy rikuchiq',
-  'flash.white': 'Yuraq',
-  'flash.dark': 'Yana',
 
   // ── Modos de color ──
   'color.normal': 'Normal',
