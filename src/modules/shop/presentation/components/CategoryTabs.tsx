@@ -1,6 +1,7 @@
 import { Chip } from '@nextui-org/react';
 import type { Category } from '../../domain/category.model';
 import type { Product } from '../../domain/product.model';
+import { useLanguage } from '../../../../core/i18n/i18n';
 
 interface CategoryTabsProps {
   categories: Category[];
@@ -19,6 +20,7 @@ export default function CategoryTabs({
   activeCategoryId,
   onSelect,
 }: CategoryTabsProps) {
+  const { t } = useLanguage();
   const countByCategory = (catId: string) =>
     products.filter((p) => p.categoryId === catId).length;
 
@@ -43,7 +45,7 @@ export default function CategoryTabs({
             </svg>
           }
         >
-          Todos ({products.length})
+          {t('shop.all')} ({products.length})
         </Chip>
 
         {categories.map((cat) => (

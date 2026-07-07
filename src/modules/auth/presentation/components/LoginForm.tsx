@@ -5,6 +5,7 @@ import { loginSchema, type LoginFormData } from '../../application/login.schema'
 import { useAuth } from '../../application/use-auth.hook';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useLanguage } from '../../../../core/i18n/i18n';
 
 interface LoginFormProps {
   onSwitchToRegister: () => void;
@@ -18,6 +19,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const { login, isLoading, error, clearError } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const { t } = useLanguage();
 
   const {
     register,
@@ -41,13 +43,13 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="text-center">
-        <h1 className="font-display text-3xl font-semibold text-foreground">Bienvenid@ de vuelta</h1>
-        <p className="mt-2 text-sm text-default-500">Entra a tu universo personalizado</p>
+        <h1 className="font-display text-3xl font-semibold text-foreground">{t('auth.welcomeBack')}</h1>
+        <p className="mt-2 text-sm text-default-500">{t('auth.enterPortal')}</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
         <Input
-          label="Correo electrónico"
+          label={t('auth.email')}
           type="email"
           autoComplete="email"
           variant="bordered"
@@ -66,7 +68,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         />
 
         <Input
-          label="Contraseña"
+          label={t('auth.password')}
           type={showPassword ? 'text' : 'password'}
           autoComplete="current-password"
           variant="bordered"
@@ -80,7 +82,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             </svg>
           }
           endContent={
-            <button type="button" aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"} aria-pressed={showPassword} className="text-default-400 hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-full p-1" onClick={() => setShowPassword(!showPassword)}>
+            <button type="button" aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')} aria-pressed={showPassword} className="text-default-400 hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none rounded-full p-1" onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
@@ -125,14 +127,14 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             )
           }
         >
-          Ingresar al portal
+          {t('auth.loginBtn')}
         </Button>
       </form>
 
       <div className="flex items-center justify-center gap-2 text-sm text-default-500">
-        <span>¿No tienes cuenta?</span>
+        <span>{t('auth.noAccount')}</span>
         <button type="button" className="font-semibold text-primary hover:underline" onClick={onSwitchToRegister}>
-          Regístrate aquí
+          {t('auth.registerLink')}
         </button>
       </div>
     </div>

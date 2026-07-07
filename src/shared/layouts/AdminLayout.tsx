@@ -9,34 +9,7 @@ import {
   Chip,
 } from '@nextui-org/react';
 import { useAuthStore } from '../../modules/auth/application/auth.store';
-
-/** Sidebar navigation items for the admin panel */
-const sidebarItems = [
-  {
-    to: '/admin', label: 'Dashboard', end: true,
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" /></svg>,
-  },
-  {
-    to: '/admin/productos', label: 'Productos',
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>,
-  },
-  {
-    to: '/admin/categorias', label: 'Categorías',
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z" /></svg>,
-  },
-  {
-    to: '/admin/pedidos', label: 'Pedidos',
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" /><path d="M9 14l2 2 4-4" /></svg>,
-  },
-  {
-    to: '/admin/usuarios', label: 'Usuarios',
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>,
-  },
-  {
-    to: '/admin/cupones', label: 'Cupones',
-    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z" /><path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" /></svg>,
-  },
-];
+import { useLanguage } from '../../core/i18n/i18n';
 
 /**
  * Layout del panel de administración.
@@ -46,6 +19,35 @@ const sidebarItems = [
 export default function AdminLayout() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const { t } = useLanguage();
+
+  /** Sidebar navigation items for the admin panel */
+  const sidebarItems = [
+    {
+      to: '/admin', label: t('admin.dashboard'), end: true,
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="9" rx="1" /><rect x="14" y="3" width="7" height="5" rx="1" /><rect x="14" y="12" width="7" height="9" rx="1" /><rect x="3" y="16" width="7" height="5" rx="1" /></svg>,
+    },
+    {
+      to: '/admin/productos', label: t('admin.products'),
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>,
+    },
+    {
+      to: '/admin/categorias', label: t('admin.categories'),
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2z" /></svg>,
+    },
+    {
+      to: '/admin/pedidos', label: t('admin.orders'),
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" /><path d="M9 14l2 2 4-4" /></svg>,
+    },
+    {
+      to: '/admin/usuarios', label: t('admin.users'),
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>,
+    },
+    {
+      to: '/admin/cupones', label: t('admin.coupons'),
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z" /><path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" /></svg>,
+    },
+  ];
 
   const handleLogout = async () => {
     await logout();
@@ -115,7 +117,7 @@ export default function AdminLayout() {
       {/* Main */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <header className="flex items-center justify-between h-16 px-6 border-b border-[--glass-border] bg-moon-bg/80 backdrop-blur-lg flex-shrink-0">
-          <span className="text-sm font-medium text-default-500">Panel de administración</span>
+          <span className="text-sm font-medium text-default-500">{t('admin.panel')}</span>
 
           <Dropdown placement="bottom-end" classNames={{
             content: "bg-moon-bg-secondary/95 backdrop-blur-xl border border-[--glass-border] shadow-[0_12px_40px_rgba(0,0,0,0.5)]",
@@ -124,7 +126,7 @@ export default function AdminLayout() {
               <button
                 className="flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-primary/[0.06] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
                 id="admin-user-menu-btn"
-                aria-label={`Menú de ${user?.name}`}
+                aria-label={`${t('nav.userMenu')} — ${user?.name}`}
                 aria-haspopup="true"
               >
                 <Avatar
@@ -136,7 +138,7 @@ export default function AdminLayout() {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-default-400"><polyline points="6,9 12,15 18,9" /></svg>
               </button>
             </DropdownTrigger>
-            <DropdownMenu aria-label="Menú admin" variant="flat" id="admin-user-dropdown" onAction={handleDropdownAction}>
+            <DropdownMenu aria-label={t('nav.userMenu')} variant="flat" id="admin-user-dropdown" onAction={handleDropdownAction}>
               <DropdownSection showDivider>
                 <DropdownItem key="info" isReadOnly className="opacity-100 cursor-default">
                   <p className="text-sm font-semibold text-foreground">{user?.name} {user?.lastName}</p>
@@ -146,18 +148,18 @@ export default function AdminLayout() {
               <DropdownSection showDivider>
                 <DropdownItem key="home" startContent={
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9,22 9,12 15,12 15,22" /></svg>
-                }>Inicio</DropdownItem>
+                }>{t('nav.home')}</DropdownItem>
                 <DropdownItem key="orders" startContent={
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3H8a2 2 0 0 0-2 2v16l6-3 6 3V5a2 2 0 0 0-2-2z" /></svg>
-                }>Mis Pedidos</DropdownItem>
+                }>{t('nav.orders')}</DropdownItem>
                 <DropdownItem key="account" startContent={
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-                }>Mi Cuenta</DropdownItem>
+                }>{t('nav.account')}</DropdownItem>
               </DropdownSection>
               <DropdownSection>
                 <DropdownItem key="logout" color="danger" id="admin-logout-btn" startContent={
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16,17 21,12 16,7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
-                }>Cerrar sesi&oacute;n</DropdownItem>
+                }>{t('nav.logout')}</DropdownItem>
               </DropdownSection>
             </DropdownMenu>
           </Dropdown>

@@ -1,6 +1,7 @@
 import { Chip } from '@nextui-org/react';
 import type { ReactNode } from 'react';
 import MoonScene from './MoonScene';
+import { useLanguage } from '../../../../core/i18n/i18n';
 
 interface BrandingPanelProps {
   children?: ReactNode;
@@ -11,6 +12,8 @@ interface BrandingPanelProps {
  * Se muestra a la izquierda en login, a la derecha en register.
  */
 export default function BrandingPanel({ children }: BrandingPanelProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="relative flex h-full min-h-[500px] flex-col items-center justify-center p-8">
       {/* Luna 3D + campo de estrellas como fondo del panel */}
@@ -37,11 +40,11 @@ export default function BrandingPanel({ children }: BrandingPanelProps) {
         </div>
 
         <h2 className="font-display text-xl italic text-primary/80">
-          &quot;Diseñamos lo que imaginas&quot;
+          {t('brand.slogan')}
         </h2>
 
         <p className="max-w-[260px] text-sm text-default-500 leading-relaxed">
-          Productos personalizados únicos que cuentan tu historia bajo la luz de la luna.
+          {t('brand.description')}
         </p>
 
         <div className="flex flex-wrap justify-center gap-2">
@@ -52,7 +55,7 @@ export default function BrandingPanel({ children }: BrandingPanelProps) {
               </svg>
             }
           >
-            Polos &amp; Hoodies
+            {t('brand.polos')}
           </Chip>
           <Chip variant="bordered" size="sm" classNames={{ base: "border-primary/30", content: "text-default-400 text-xs" }}
             startContent={
@@ -65,7 +68,7 @@ export default function BrandingPanel({ children }: BrandingPanelProps) {
               </svg>
             }
           >
-            Tazas &amp; Vasos
+            {t('brand.mugs')}
           </Chip>
           <Chip variant="bordered" size="sm" classNames={{ base: "border-primary/30", content: "text-default-400 text-xs" }}
             startContent={
@@ -76,7 +79,7 @@ export default function BrandingPanel({ children }: BrandingPanelProps) {
               </svg>
             }
           >
-            Accesorios
+            {t('brand.accessories')}
           </Chip>
         </div>
 

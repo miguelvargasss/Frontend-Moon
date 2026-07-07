@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useLanguage, type Language } from '../../core/i18n/i18n';
 
 // ── Tipos ──────────────────────────────────────────────────────────────
 type ColorMode = 'normal' | 'alto-contraste' | 'deuteranopia' | 'protanopia' | 'tritanopia' | 'escala-grises';
@@ -17,19 +18,26 @@ const DEFAULT_PREFS: A11yPreferences = {
 };
 
 // ── Configuración de modos de color ────────────────────────────────────
-const COLOR_MODES: { id: ColorMode; label: string; desc: string; swatch: string }[] = [
-  { id: 'normal',         label: 'Normal',          desc: 'Colores originales',                    swatch: 'linear-gradient(135deg,#99f6e4,#0A0F1E)' },
-  { id: 'alto-contraste', label: 'Alto contraste',  desc: 'Para baja visión',                      swatch: 'linear-gradient(135deg,#fff700,#000)' },
-  { id: 'escala-grises',  label: 'Escala de grises',desc: 'Sin colores',                           swatch: 'linear-gradient(135deg,#fff,#555)' },
-  { id: 'deuteranopia',   label: 'Deuteranopía',    desc: 'Daltonismo rojo-verde (más común)',     swatch: 'linear-gradient(135deg,#5b92ff,#a67c00)' },
-  { id: 'protanopia',     label: 'Protanopía',      desc: 'Daltonismo, sin percepción del rojo',   swatch: 'linear-gradient(135deg,#7fb3ff,#856400)' },
-  { id: 'tritanopia',     label: 'Tritanopía',      desc: 'Daltonismo azul-amarillo (raro)',       swatch: 'linear-gradient(135deg,#ff6e6e,#00c6c6)' },
+const COLOR_MODES: { id: ColorMode; labelKey: string; descKey: string; swatch: string }[] = [
+  { id: 'normal',         labelKey: 'color.normal',        descKey: 'color.normalDesc',        swatch: 'linear-gradient(135deg,#99f6e4,#0A0F1E)' },
+  { id: 'alto-contraste', labelKey: 'color.highContrast',  descKey: 'color.highContrastDesc',  swatch: 'linear-gradient(135deg,#fff700,#000)' },
+  { id: 'escala-grises',  labelKey: 'color.grayscale',     descKey: 'color.grayscaleDesc',     swatch: 'linear-gradient(135deg,#fff,#555)' },
+  { id: 'deuteranopia',   labelKey: 'color.deuteranopia',  descKey: 'color.deuteranopiaDesc',  swatch: 'linear-gradient(135deg,#5b92ff,#a67c00)' },
+  { id: 'protanopia',     labelKey: 'color.protanopia',    descKey: 'color.protanopiaDesc',    swatch: 'linear-gradient(135deg,#7fb3ff,#856400)' },
+  { id: 'tritanopia',     labelKey: 'color.tritanopia',    descKey: 'color.tritanopiaDesc',    swatch: 'linear-gradient(135deg,#ff6e6e,#00c6c6)' },
 ];
 
-const FONT_SIZES: { id: FontSize; label: string; multiplier: string }[] = [
-  { id: 'normal',     label: 'Normal',    multiplier: '100%' },
-  { id: 'grande',     label: 'Grande',    multiplier: '118%' },
-  { id: 'muy-grande', label: 'Muy grande',multiplier: '136%' },
+const FONT_SIZES: { id: FontSize; labelKey: string; multiplier: string }[] = [
+  { id: 'normal',     labelKey: 'size.normal',    multiplier: '100%' },
+  { id: 'grande',     labelKey: 'size.large',     multiplier: '118%' },
+  { id: 'muy-grande', labelKey: 'size.veryLarge',  multiplier: '136%' },
+];
+
+// ── Configuración de idiomas ───────────────────────────────────────────
+const LANGUAGES: { id: Language; label: string; flag: string }[] = [
+  { id: 'es', label: 'Español',  flag: '🇪🇸' },
+  { id: 'en', label: 'English',  flag: '🇬🇧' },
+  { id: 'qu', label: 'Runasimi', flag: '🏔️' },
 ];
 
 // ── SVG filter matrices para daltonismo (matrices científicas) ─────────
@@ -95,8 +103,20 @@ function applyPreferences(prefs: A11yPreferences) {
   }
 }
 
+// ── Flash blanco al cambiar idioma ─────────────────────────────────────
+function triggerLangFlash() {
+  const overlay = document.createElement('div');
+  overlay.className = 'a11y-lang-flash';
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(overlay);
+  overlay.addEventListener('animationend', () => {
+    overlay.remove();
+  });
+}
+
 // ── Componente principal ───────────────────────────────────────────────
 export default function AccessibilityWidget() {
+  const { language, setLanguage, t } = useLanguage();
   const [open, setOpen]   = useState(false);
   const [prefs, setPrefs] = useState<A11yPreferences>(() => {
     try {
@@ -131,7 +151,22 @@ export default function AccessibilityWidget() {
   const setFontSize = (size: FontSize) =>
     setPrefs((p) => ({ ...p, fontSize: size }));
 
-  const resetAll = () => setPrefs(DEFAULT_PREFS);
+  const handleLanguageChange = useCallback((lang: Language) => {
+    if (lang === language) return;
+    triggerLangFlash();
+    // Cambiar idioma después de un breve delay para que el flash sea visible
+    setTimeout(() => {
+      setLanguage(lang);
+    }, 150);
+  }, [language, setLanguage]);
+
+  const resetAll = () => {
+    setPrefs(DEFAULT_PREFS);
+    if (language !== 'es') {
+      triggerLangFlash();
+      setTimeout(() => setLanguage('es'), 150);
+    }
+  };
 
   return (
     <>
@@ -152,10 +187,12 @@ export default function AccessibilityWidget() {
         {open && (
           <div
             role="dialog"
-            aria-label="Opciones de accesibilidad visual"
+            aria-label={t('a11y.title')}
             aria-modal="false"
             style={{
               width: '300px',
+              maxHeight: 'calc(100vh - 120px)',
+              overflowY: 'auto',
               borderRadius: '16px',
               background: 'rgba(13, 26, 20, 0.97)',
               backdropFilter: 'blur(20px)',
@@ -175,13 +212,13 @@ export default function AccessibilityWidget() {
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                 </svg>
                 <span style={{ fontFamily: 'Outfit,sans-serif', fontWeight: 600, fontSize: '0.95rem', color: '#e2e8f0' }}>
-                  Accesibilidad Visual
+                  {t('a11y.title')}
                 </span>
               </div>
               <button
                 onClick={resetAll}
-                aria-label="Restablecer todas las opciones de accesibilidad"
-                title="Restablecer todo"
+                aria-label={t('a11y.resetAll')}
+                title={t('a11y.reset')}
                 style={{
                   background: 'none',
                   border: '1px solid rgba(255,255,255,0.1)',
@@ -196,7 +233,7 @@ export default function AccessibilityWidget() {
                 onMouseEnter={(e) => { e.currentTarget.style.color = '#99f6e4'; e.currentTarget.style.borderColor = 'rgba(45,212,168,0.4)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; }}
               >
-                Restablecer
+                {t('a11y.reset')}
               </button>
             </div>
 
@@ -211,7 +248,7 @@ export default function AccessibilityWidget() {
                 letterSpacing: '0.1em',
                 marginBottom: '10px',
               }}>
-                Modo de color
+                {t('a11y.colorMode')}
               </h2>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 {COLOR_MODES.map((mode) => {
@@ -221,7 +258,7 @@ export default function AccessibilityWidget() {
                       key={mode.id}
                       onClick={() => setColorMode(mode.id)}
                       aria-pressed={active}
-                      aria-label={`${mode.label}: ${mode.desc}`}
+                      aria-label={`${t(mode.labelKey)}: ${t(mode.descKey)}`}
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -251,7 +288,7 @@ export default function AccessibilityWidget() {
                         color: active ? '#99f6e4' : '#e2e8f0',
                         lineHeight: 1.2,
                       }}>
-                        {mode.label}
+                        {t(mode.labelKey)}
                       </span>
                     </button>
                   );
@@ -270,7 +307,7 @@ export default function AccessibilityWidget() {
                 letterSpacing: '0.1em',
                 marginBottom: '10px',
               }}>
-                Tamaño de texto
+                {t('a11y.fontSize')}
               </h2>
               <div style={{ display: 'flex', gap: '8px' }}>
                 {FONT_SIZES.map((size) => {
@@ -280,7 +317,7 @@ export default function AccessibilityWidget() {
                       key={size.id}
                       onClick={() => setFontSize(size.id)}
                       aria-pressed={active}
-                      aria-label={`Tamaño de texto ${size.label}`}
+                      aria-label={`${t('a11y.textSize')} ${t(size.labelKey)}`}
                       style={{
                         flex: 1,
                         padding: '10px 8px',
@@ -309,7 +346,60 @@ export default function AccessibilityWidget() {
                         fontFamily: 'Outfit,sans-serif',
                         fontWeight: active ? 600 : 400,
                       }}>
-                        {size.label}
+                        {t(size.labelKey)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* ── Sección: Idioma ── */}
+            <section aria-labelledby="language-heading">
+              <h2 id="language-heading" style={{
+                fontFamily: 'Outfit,sans-serif',
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                color: 'rgba(255,255,255,0.4)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                marginBottom: '10px',
+              }}>
+                {t('a11y.language')}
+              </h2>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+                {LANGUAGES.map((lang) => {
+                  const active = language === lang.id;
+                  return (
+                    <button
+                      key={lang.id}
+                      onClick={() => handleLanguageChange(lang.id)}
+                      aria-pressed={active}
+                      aria-label={`${t('a11y.language')}: ${lang.label}`}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '6px',
+                        padding: '10px 6px',
+                        borderRadius: '10px',
+                        border: `1.5px solid ${active ? '#99f6e4' : 'rgba(255,255,255,0.08)'}`,
+                        background: active ? 'rgba(45,212,168,0.08)' : 'rgba(255,255,255,0.02)',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s',
+                      }}
+                    >
+                      <span style={{ fontSize: '1.3rem', lineHeight: 1 }}>
+                        {lang.flag}
+                      </span>
+                      <span style={{
+                        fontFamily: 'Outfit,sans-serif',
+                        fontSize: '0.7rem',
+                        fontWeight: active ? 600 : 400,
+                        color: active ? '#99f6e4' : '#e2e8f0',
+                        lineHeight: 1.2,
+                      }}>
+                        {lang.label}
                       </span>
                     </button>
                   );
@@ -328,7 +418,7 @@ export default function AccessibilityWidget() {
               paddingTop: '12px',
               margin: 0,
             }}>
-              Tus preferencias se guardan automáticamente.
+              {t('a11y.savedPrefs')}
             </p>
           </div>
         )}
@@ -336,10 +426,10 @@ export default function AccessibilityWidget() {
         {/* Botón principal flotante */}
         <button
           onClick={() => setOpen((o) => !o)}
-          aria-label={open ? 'Cerrar opciones de accesibilidad' : 'Abrir opciones de accesibilidad visual'}
+          aria-label={open ? t('a11y.close') : t('a11y.open')}
           aria-expanded={open}
           aria-controls="a11y-widget-panel"
-          title={open ? 'Cerrar accesibilidad' : 'Opciones de accesibilidad'}
+          title={open ? t('a11y.close') : t('a11y.open')}
           style={{
             width: '52px',
             height: '52px',

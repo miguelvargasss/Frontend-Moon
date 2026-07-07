@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useLanguage } from '../../core/i18n/i18n';
 
 interface CartToastProps {
   visible: boolean;
@@ -25,6 +26,7 @@ export default function CartToast({
   onGoToCart,
 }: CartToastProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (visible) {
@@ -75,7 +77,7 @@ export default function CartToast({
         role="status"
         aria-live="polite"
         aria-atomic="true"
-        aria-label="Notificación de carrito de compras"
+        aria-label={t('toast.cartNotification')}
         className={`cart-toast-enter`}
         style={{
           position: 'fixed',
@@ -129,7 +131,7 @@ export default function CartToast({
           {/* Texto + imagen */}
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ margin: 0, fontSize: '0.7rem', color: '#00d97e', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              Producto agregado
+              {t('toast.productAdded')}
             </p>
             <div style={{ display: 'flex', gap: '10px', marginTop: '6px', alignItems: 'center' }}>
               {productImage && (
@@ -153,7 +155,7 @@ export default function CartToast({
           {/* Botón cerrar */}
           <button
             onClick={onClose}
-            aria-label="Cerrar notificación"
+            aria-label={t('toast.closeNotification')}
             style={{
               background: 'none',
               border: 'none',
@@ -175,8 +177,8 @@ export default function CartToast({
 
         {/* Footer con botón */}
         <div style={{ padding: '0 16px 14px', display: 'flex', justifyContent: 'flex-end' }}>
-          <button className="toast-btn-cart" onClick={onGoToCart} aria-label="Ir al carrito de compras">
-            Ver carrito →
+          <button className="toast-btn-cart" onClick={onGoToCart} aria-label={t('toast.viewCart')}>
+            {t('toast.viewCart')}
           </button>
         </div>
       </div>

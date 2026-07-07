@@ -99,3 +99,68 @@ La implementación de estos cambios constituye evidencia directa de cumplimiento
 - **Meta 10.3:** Garantizar la igualdad de oportunidades. → Al eliminar las barreras de interacción digital que excluían a usuarios de teclado o lectores de pantalla.
 
 **Métricas de cumplimiento aplicadas:** WCAG 2.1, Nivel AA (Criterios 1.1.1, 1.3.1, 2.4.1, 2.4.7, 4.1.3).
+
+---
+
+## Principio 3: Comprensible (Ampliación) — Internacionalización (i18n)
+
+> *La información y el funcionamiento de la interfaz de usuario deben ser comprensibles.*
+
+### Idioma de la Página (Criterio 3.1.1 - Nivel A)
+
+**Problema:** La página no indicaba programáticamente su idioma, y los lectores de pantalla no podían determinar la pronunciación correcta de los textos.
+
+**Solución:** Se implementó un sistema i18n ligero basado en React Context que actualiza dinámicamente el atributo `lang` del elemento `<html>` cada vez que el usuario cambia de idioma. Los valores posibles son `es`, `en` y `qu` (códigos ISO 639-1 válidos).
+
+**Archivo:** `src/core/i18n/i18n.tsx` (LanguageProvider)
+
+### Idioma de las Partes (Criterio 3.1.2 - Nivel AA)
+
+**Problema:** Todos los textos de la interfaz estaban hardcodeados en español, excluyendo a usuarios de otras lenguas.
+
+**Solución:** Se extrajeron **más de 82 claves de traducción** a diccionarios independientes para 3 idiomas:
+
+| Idioma | Archivo | Justificación |
+|--------|---------|---------------|
+| Español | `src/core/i18n/es.ts` | Idioma base del proyecto |
+| English | `src/core/i18n/en.ts` | Accesibilidad internacional |
+| Runasimi (Quechua) | `src/core/i18n/qu.ts` | Inclusión de lenguas originarias (ODS 10) |
+
+### Sistema de Cambio de Idioma en el Widget de Accesibilidad
+
+**Archivo:** `AccessibilityWidget.tsx`
+
+Se añadió una nueva sección **"Idioma"** al widget de accesibilidad visual, con 3 botones (🇪🇸 Español, 🇬🇧 English, 🏔️ Runasimi) que incluyen:
+
+- `aria-pressed` para indicar el idioma activo
+- `aria-label` traducido dinámicamente
+- Transición visual de **pantalla blanca (flash)** como feedback del cambio
+
+### Archivos Modificados para i18n
+
+| Archivo | Textos traducidos |
+|---------|------------------|
+| `App.tsx` | Skip link |
+| `Navbar.tsx` | Carrito, login, menú de usuario, logout |
+| `MainLayout.tsx` | Footer |
+| `AdminLayout.tsx` | Sidebar, header, dropdown |
+| `HeroBanner.tsx` | Título, subtítulo, descripción |
+| `ShopPage.tsx` | Búsqueda, resultados, loading |
+| `ProductCard.tsx` | Ver Detalles, aria-labels |
+| `EmptyProducts.tsx` | Mensajes de estado vacío |
+| `CategoryTabs.tsx` | Tab "Todos" |
+| `LoginForm.tsx` | Labels, botones, mensajes |
+| `RegisterForm.tsx` | Labels, requisitos de contraseña, botones |
+| `BrandingPanel.tsx` | Slogan, descripción, chips de categoría |
+| `CartToast.tsx` | Notificación, botones |
+
+---
+
+## Evidencia ODS 10: Reducción de las Desigualdades (Ampliación)
+
+La implementación de la internacionalización amplía el cumplimiento del **ODS 10**:
+
+- **Meta 10.2 (Inclusión):** La disponibilidad de Quechua (Runasimi) permite que hablantes de lenguas originarias del Perú accedan a la plataforma en su idioma nativo.
+- **Meta 10.3 (Igualdad):** Usuarios angloparlantes y quechuahablantes tienen la misma experiencia de compra que los hispanohablantes.
+
+**Métricas de cumplimiento aplicadas:** WCAG 2.1, Nivel AA/AAA (Criterios 1.1.1, 1.3.1, 2.4.1, 2.4.7, 3.1.1, 3.1.2, 3.1.3, 4.1.3).

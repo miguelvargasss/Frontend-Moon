@@ -1,8 +1,12 @@
+import { useLanguage } from '../../../../core/i18n/i18n';
+
 /**
  * Estado vacío cuando no hay productos.
  * Muestra un icono de luna SVG con mensaje elegante (sin emojis).
  */
 export default function EmptyProducts() {
+  const { t } = useLanguage();
+
   return (
     <div className="flex flex-col items-center gap-4 py-12 text-center" id="empty-products">
       <div className="opacity-60 animate-[floatMoon_4s_ease-in-out_infinite]">
@@ -15,11 +19,11 @@ export default function EmptyProducts() {
           <circle cx="32" cy="32" r="20" stroke="rgba(45,212,168,0.1)" strokeWidth="0.5" />
         </svg>
       </div>
-      <h3 className="font-display text-xl font-semibold text-foreground">No encontramos productos</h3>
+      <h3 className="font-display text-xl font-semibold text-foreground">{t('empty.title')}</h3>
       <p className="text-sm text-default-500 leading-relaxed">
-        Pronto tendremos productos increíbles para ti.
+        {t('empty.line1')}
         <br />
-        Vuelve a visitarnos.
+        {t('empty.line2')}
       </p>
     </div>
   );

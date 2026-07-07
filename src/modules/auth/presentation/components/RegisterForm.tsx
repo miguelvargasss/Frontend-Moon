@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input, Button } from '@nextui-org/react';
 import { registerSchema, type RegisterFormData } from '../../application/register.schema';
 import { useAuth } from '../../application/use-auth.hook';
+import { useLanguage } from '../../../../core/i18n/i18n';
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
@@ -51,6 +52,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+  const { t } = useLanguage();
 
   const {
     register,
@@ -71,10 +73,10 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const passwordValue = watch('password') || '';
 
   const requirements = [
-    { label: 'Entre 6 y 18 caracteres', satisfied: passwordValue.length >= 6 && passwordValue.length <= 18 },
-    { label: 'Al menos una mayúscula', satisfied: /[A-Z]/.test(passwordValue) },
-    { label: 'Al menos una minúscula', satisfied: /[a-z]/.test(passwordValue) },
-    { label: 'Un carácter especial (ej: !@#$%)', satisfied: /[\W_]/.test(passwordValue) },
+    { label: t('auth.req6to18'), satisfied: passwordValue.length >= 6 && passwordValue.length <= 18 },
+    { label: t('auth.reqUpper'), satisfied: /[A-Z]/.test(passwordValue) },
+    { label: t('auth.reqLower'), satisfied: /[a-z]/.test(passwordValue) },
+    { label: t('auth.reqSpecial'), satisfied: /[\W_]/.test(passwordValue) },
   ];
 
   const onSubmit = async (data: RegisterFormData) => {
@@ -93,12 +95,12 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary text-2xl font-bold">
           ✓
         </div>
-        <h1 className="font-display text-3xl font-semibold text-foreground">¡Cuenta creada!</h1>
+        <h1 className="font-display text-3xl font-semibold text-foreground">{t('auth.accountCreated')}</h1>
         <p className="text-sm text-default-500">
-          Tu universo personalizado te espera. Inicia sesión para explorar.
+          {t('auth.accountCreatedMsg')}
         </p>
         <Button color="primary" size="lg" className="font-semibold" onPress={onSwitchToLogin}>
-          Iniciar sesión
+          {t('auth.loginLink')}
         </Button>
       </div>
     );
@@ -107,14 +109,14 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="text-center">
-        <h1 className="font-display text-3xl font-semibold text-foreground">Crea tu universo</h1>
-        <p className="mt-2 text-sm text-default-500">Tu historia bajo la luna comienza aquí</p>
+        <h1 className="font-display text-3xl font-semibold text-foreground">{t('auth.createUniverse')}</h1>
+        <p className="mt-2 text-sm text-default-500">{t('auth.storyBegins')}</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
         <div className="grid grid-cols-2 gap-3">
           <Input
-            label="Nombre"
+            label={t('auth.firstName')}
             type="text"
             autoComplete="given-name"
             variant="bordered"
@@ -133,7 +135,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
             {...register('name')}
           />
           <Input
-            label="Apellido"
+            label={t('auth.lastName')}
             type="text"
             autoComplete="family-name"
             variant="bordered"
@@ -154,7 +156,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         </div>
 
         <Input
-          label="Correo electrónico"
+          label={t('auth.email')}
           type="email"
           autoComplete="email"
           variant="bordered"
@@ -175,7 +177,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
         <div className="flex flex-col gap-2">
           <Input
-            label="Contraseña"
+            label={t('auth.password')}
             type={showPassword ? 'text' : 'password'}
             autoComplete="new-password"
             variant="bordered"
@@ -188,7 +190,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
             }
-            endContent={<PasswordToggle show={showPassword} onToggle={() => setShowPassword(!showPassword)} label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"} />}
+            endContent={<PasswordToggle show={showPassword} onToggle={() => setShowPassword(!showPassword)} label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')} />}
             maxLength={18}
             isInvalid={!!errors.password}
             errorMessage={errors.password?.message}
@@ -202,7 +204,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
           {isPasswordFocused && (
             <div className="flex flex-col gap-1.5 p-3 rounded-xl border border-default-200 bg-default-50/50 animate-appearance-in">
-              <p className="text-[10px] font-semibold text-default-500 uppercase tracking-wider mb-1">Requisitos de seguridad:</p>
+              <p className="text-[10px] font-semibold text-default-500 uppercase tracking-wider mb-1">{t('auth.securityReqs')}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
                 {requirements.map((req, idx) => (
                   <RequirementItem key={idx} label={req.label} satisfied={req.satisfied} />
@@ -213,7 +215,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
         </div>
 
         <Input
-          label="Confirmar contraseña"
+          label={t('auth.confirmPassword')}
           type={showConfirm ? 'text' : 'password'}
           autoComplete="new-password"
           variant="bordered"
@@ -227,7 +229,7 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
               <circle cx="12" cy="16" r="1" />
             </svg>
           }
-          endContent={<PasswordToggle show={showConfirm} onToggle={() => setShowConfirm(!showConfirm)} label={showConfirm ? "Ocultar confirmación de contraseña" : "Mostrar confirmación de contraseña"} />}
+          endContent={<PasswordToggle show={showConfirm} onToggle={() => setShowConfirm(!showConfirm)} label={showConfirm ? t('auth.hideConfirm') : t('auth.showConfirm')} />}
           maxLength={18}
           isInvalid={!!errors.confirmPassword}
           errorMessage={errors.confirmPassword?.message}
@@ -259,14 +261,14 @@ export default function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
             )
           }
         >
-          Crear cuenta
+          {t('auth.createAccount')}
         </Button>
       </form>
 
       <div className="flex items-center justify-center gap-2 text-sm text-default-500">
-        <span>¿Ya tienes cuenta?</span>
+        <span>{t('auth.hasAccount')}</span>
         <button type="button" className="font-semibold text-primary hover:underline" onClick={onSwitchToLogin}>
-          Inicia sesión
+          {t('auth.loginLink')}
         </button>
       </div>
     </div>

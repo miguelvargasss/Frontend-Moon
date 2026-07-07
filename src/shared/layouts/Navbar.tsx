@@ -14,6 +14,7 @@ import {
 } from '@nextui-org/react';
 import { useAuthStore } from '../../modules/auth/application/auth.store';
 import { useCartStore } from '../../modules/cart/application/cart.store';
+import { useLanguage } from '../../core/i18n/i18n';
 
 /**
  * Badge del carrito con contador de ítems.
@@ -21,6 +22,7 @@ import { useCartStore } from '../../modules/cart/application/cart.store';
  */
 function CartBadge() {
   const totalItems = useCartStore((s) => s.totalItems());
+  const { t } = useLanguage();
   return (
     <Button
       as={Link}
@@ -30,7 +32,7 @@ function CartBadge() {
       radius="lg"
       className="text-default-500 hover:text-foreground relative"
       id="navbar-cart-btn"
-      aria-label="Carrito de compras"
+      aria-label={t('nav.cart')}
     >
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
@@ -53,6 +55,7 @@ function CartBadge() {
 export default function Navbar() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuthStore();
+  const { t } = useLanguage();
 
   const handleLogout = async () => {
     await logout();
@@ -117,7 +120,7 @@ export default function Navbar() {
                 <button
                   className="flex items-center gap-2 px-2 py-1 rounded-xl hover:bg-primary/[0.06] transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded-xl"
                   id="navbar-user-menu-btn"
-                  aria-label={`Menú de ${user.name}`}
+                  aria-label={`${t('nav.userMenu')} — ${user.name}`}
                   aria-haspopup="true"
                 >
                   <Avatar
@@ -134,7 +137,7 @@ export default function Navbar() {
                 </button>
               </DropdownTrigger>
               <DropdownMenu
-                aria-label="Menú de usuario"
+                aria-label={t('nav.userMenu')}
                 variant="flat"
                 id="navbar-user-dropdown"
                 onAction={handleDropdownAction}
@@ -149,12 +152,12 @@ export default function Navbar() {
                   <DropdownItem key="orders" startContent={
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3H8a2 2 0 0 0-2 2v16l6-3 6 3V5a2 2 0 0 0-2-2z" /></svg>
                   }>
-                    Mis Pedidos
+                    {t('nav.orders')}
                   </DropdownItem>
                   <DropdownItem key="account" startContent={
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                   }>
-                    Mi Cuenta
+                    {t('nav.account')}
                   </DropdownItem>
                 </DropdownSection>
                 {user.role === 'admin' ? (
@@ -162,7 +165,7 @@ export default function Navbar() {
                     <DropdownItem key="admin" className="text-primary" startContent={
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
                     }>
-                      Panel Admin
+                      {t('nav.admin')}
                     </DropdownItem>
                   </DropdownSection>
                 ) : null!}
@@ -170,7 +173,7 @@ export default function Navbar() {
                   <DropdownItem key="logout" color="danger" id="navbar-logout-btn" startContent={
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline points="16,17 21,12 16,7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
                   }>
-                    Cerrar sesi&oacute;n
+                    {t('nav.logout')}
                   </DropdownItem>
                 </DropdownSection>
               </DropdownMenu>
@@ -192,7 +195,7 @@ export default function Navbar() {
                 </svg>
               }
             >
-              Ingresar
+              {t('nav.login')}
             </Button>
           </NavbarItem>
         )}

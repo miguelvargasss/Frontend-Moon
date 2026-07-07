@@ -6,6 +6,7 @@ import HeroBanner from '../components/HeroBanner';
 import CategoryTabs from '../components/CategoryTabs';
 import ProductCard from '../components/ProductCard';
 import EmptyProducts from '../components/EmptyProducts';
+import { useLanguage } from '../../../../core/i18n/i18n';
 
 /**
  * Página principal de la tienda MoonPhases.
@@ -13,6 +14,7 @@ import EmptyProducts from '../components/EmptyProducts';
 export default function ShopPage() {
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const { t } = useLanguage();
 
   const { products, loading, error } = useProducts();
   const { categories } = useCategories();
@@ -46,7 +48,7 @@ export default function ShopPage() {
         <div className="flex justify-center -mt-8 mb-8 relative z-[2]">
           <Input
             type="text"
-            placeholder="Buscar productos..."
+            placeholder={t('shop.search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             id="shop-search-input"
@@ -76,13 +78,13 @@ export default function ShopPage() {
         {/* Resultados */}
         <div className="pb-12">
           <p className="text-sm text-default-400 mb-6">
-            {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''} encontrado{filteredProducts.length !== 1 ? 's' : ''}
+            {filteredProducts.length} {t('shop.productsFound')}
           </p>
 
           {loading ? (
             <div className="flex flex-col items-center gap-4 py-12 text-default-500 text-sm">
               <div className="loader-moon" />
-              <p>Cargando catálogo...</p>
+              <p>{t('shop.loading')}</p>
             </div>
           ) : error ? (
             <div className="text-center py-12 text-danger text-sm">

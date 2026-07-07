@@ -4,6 +4,7 @@ import { Card, CardBody, CardFooter, Button, Chip } from '@nextui-org/react';
 import type { Product } from '../../domain/product.model';
 import { useCartStore } from '../../../cart/application/cart.store';
 import { useAuthStore } from '../../../auth/application/auth.store';
+import { useLanguage } from '../../../../core/i18n/i18n';
 
 interface ProductCardProps {
   product: Product;
@@ -17,6 +18,7 @@ export default function ProductCard({ product, categoryName }: ProductCardProps)
   const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const { t } = useLanguage();
   const images = product.images ?? [];
   const hasImages = images.length > 0;
   const [currentImg, setCurrentImg] = useState(0);
@@ -54,10 +56,10 @@ export default function ProductCard({ product, categoryName }: ProductCardProps)
             />
             {images.length > 1 && (
               <>
-                <button className="absolute top-1/2 left-2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/70 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary/30 z-[3]" onClick={goPrev} aria-label="Anterior">
+                <button className="absolute top-1/2 left-2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/70 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary/30 z-[3]" onClick={goPrev} aria-label={t('shop.prev')}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15,18 9,12 15,6" /></svg>
                 </button>
-                <button className="absolute top-1/2 right-2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/70 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary/30 z-[3]" onClick={goNext} aria-label="Siguiente">
+                <button className="absolute top-1/2 right-2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/70 backdrop-blur-sm text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary/30 z-[3]" onClick={goNext} aria-label={t('shop.next')}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9,18 15,12 9,6" /></svg>
                 </button>
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-[3] opacity-0 group-hover:opacity-100 transition-opacity">
@@ -90,7 +92,7 @@ export default function ProductCard({ product, categoryName }: ProductCardProps)
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
               <circle cx="12" cy="12" r="3" />
             </svg>
-            Ver Detalles
+            {t('shop.viewDetails')}
           </span>
         </Link>
       </div>
@@ -112,7 +114,7 @@ export default function ProductCard({ product, categoryName }: ProductCardProps)
           size="sm"
           color="primary"
           id={`add-to-cart-${product.id}`}
-          aria-label={`Agregar ${product.name} al carrito`}
+          aria-label={`${t('shop.addToCart')} — ${product.name}`}
           isIconOnly
           className="rounded-lg"
           isLoading={adding}
