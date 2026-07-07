@@ -103,6 +103,9 @@ export const es: Record<string, string> = {
   'a11y.open': 'Abrir opciones de accesibilidad visual',
   'a11y.close': 'Cerrar opciones de accesibilidad',
   'a11y.textSize': 'Tamaño de texto',
+  'a11y.flashEffect': 'Efecto de transición',
+  'flash.white': 'Blanco',
+  'flash.dark': 'Oscuro',
 
   // ── Modos de color ──
   'color.normal': 'Normal',

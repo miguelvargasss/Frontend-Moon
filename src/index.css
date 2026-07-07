@@ -247,3 +247,12 @@ body {
   pointer-events: none;
   animation: langFlash 0.6s ease-in-out forwards;
 }
+
+.a11y-lang-flash-dark {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 999999;
+  pointer-events: none;
+  animation: langFlash 0.6s ease-in-out forwards;
+}

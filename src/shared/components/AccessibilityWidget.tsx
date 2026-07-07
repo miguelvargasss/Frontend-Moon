@@ -8,6 +8,7 @@ type FontSize   = 'normal' | 'grande' | 'muy-grande';
 interface A11yPreferences {
   colorMode: ColorMode;
   fontSize: FontSize;
+  flashMode: 'white' | 'dark';
 }
 
 const STORAGE_KEY = 'moonphases-a11y-prefs';
@@ -15,6 +16,7 @@ const STORAGE_KEY = 'moonphases-a11y-prefs';
 const DEFAULT_PREFS: A11yPreferences = {
   colorMode: 'normal',
   fontSize: 'normal',
+  flashMode: 'white',
 };
 
 // ── Configuración de modos de color ────────────────────────────────────
@@ -103,10 +105,10 @@ function applyPreferences(prefs: A11yPreferences) {
   }
 }
 
-// ── Flash blanco al cambiar idioma ─────────────────────────────────────
-function triggerLangFlash() {
+// ── Flash blanco o oscuro al cambiar idioma ─────────────────────────────────────
+function triggerLangFlash(flashMode: 'white' | 'dark' = 'white') {
   const overlay = document.createElement('div');
-  overlay.className = 'a11y-lang-flash';
+  overlay.className = flashMode === 'dark' ? 'a11y-lang-flash-dark' : 'a11y-lang-flash';
   overlay.setAttribute('aria-hidden', 'true');
   document.body.appendChild(overlay);
   overlay.addEventListener('animationend', () => {
@@ -121,7 +123,11 @@ export default function AccessibilityWidget() {
   const [prefs, setPrefs] = useState<A11yPreferences>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? (JSON.parse(saved) as A11yPreferences) : DEFAULT_PREFS;
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<A11yPreferences>;
+        return { ...DEFAULT_PREFS, ...parsed };
+      }
+      return DEFAULT_PREFS;
     } catch {
       return DEFAULT_PREFS;
     }
@@ -151,19 +157,22 @@ export default function AccessibilityWidget() {
   const setFontSize = (size: FontSize) =>
     setPrefs((p) => ({ ...p, fontSize: size }));
 
+  const setFlashMode = (mode: 'white' | 'dark') =>
+    setPrefs((p) => ({ ...p, flashMode: mode }));
+
   const handleLanguageChange = useCallback((lang: Language) => {
     if (lang === language) return;
-    triggerLangFlash();
+    triggerLangFlash(prefs.flashMode);
     // Cambiar idioma después de un breve delay para que el flash sea visible
     setTimeout(() => {
       setLanguage(lang);
     }, 150);
-  }, [language, setLanguage]);
+  }, [language, setLanguage, prefs.flashMode]);
 
   const resetAll = () => {
     setPrefs(DEFAULT_PREFS);
     if (language !== 'es') {
-      triggerLangFlash();
+      triggerLangFlash(DEFAULT_PREFS.flashMode);
       setTimeout(() => setLanguage('es'), 150);
     }
   };
@@ -404,6 +413,78 @@ export default function AccessibilityWidget() {
                     </button>
                   );
                 })}
+              </div>
+            </section>
+
+            {/* ── Sección: Flash de Idioma ── */}
+            <section aria-labelledby="flash-mode-heading">
+              <h2 id="flash-mode-heading" style={{
+                fontFamily: 'Outfit,sans-serif',
+                fontSize: '0.72rem',
+                fontWeight: 700,
+                color: 'rgba(255,255,255,0.4)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                marginBottom: '10px',
+              }}>
+                {t('a11y.flashEffect')}
+              </h2>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <button
+                  onClick={() => setFlashMode('white')}
+                  aria-pressed={prefs.flashMode === 'white'}
+                  aria-label={t('flash.white')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    padding: '10px',
+                    borderRadius: '10px',
+                    border: `1.5px solid ${prefs.flashMode === 'white' ? '#99f6e4' : 'rgba(255,255,255,0.08)'}`,
+                    background: prefs.flashMode === 'white' ? 'rgba(45,212,168,0.08)' : 'rgba(255,255,255,0.02)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  <div style={{ width: 14, height: 14, borderRadius: '50%', background: '#fff', border: '1px solid #ddd' }} />
+                  <span style={{
+                    fontFamily: 'Outfit,sans-serif',
+                    fontSize: '0.75rem',
+                    fontWeight: prefs.flashMode === 'white' ? 600 : 400,
+                    color: prefs.flashMode === 'white' ? '#99f6e4' : '#e2e8f0',
+                  }}>
+                    {t('flash.white')}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setFlashMode('dark')}
+                  aria-pressed={prefs.flashMode === 'dark'}
+                  aria-label={t('flash.dark')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    padding: '10px',
+                    borderRadius: '10px',
+                    border: `1.5px solid ${prefs.flashMode === 'dark' ? '#99f6e4' : 'rgba(255,255,255,0.08)'}`,
+                    background: prefs.flashMode === 'dark' ? 'rgba(45,212,168,0.08)' : 'rgba(255,255,255,0.02)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  <div style={{ width: 14, height: 14, borderRadius: '50%', background: '#111', border: '1px solid #444' }} />
+                  <span style={{
+                    fontFamily: 'Outfit,sans-serif',
+                    fontSize: '0.75rem',
+                    fontWeight: prefs.flashMode === 'dark' ? 600 : 400,
+                    color: prefs.flashMode === 'dark' ? '#99f6e4' : '#e2e8f0',
+                  }}>
+                    {t('flash.dark')}
+                  </span>
+                </button>
               </div>
             </section>
 
