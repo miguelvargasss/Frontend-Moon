@@ -164,3 +164,23 @@ La implementación de la internacionalización amplía el cumplimiento del **ODS
 - **Meta 10.3 (Igualdad):** Usuarios angloparlantes y quechuahablantes tienen la misma experiencia de compra que los hispanohablantes.
 
 **Métricas de cumplimiento aplicadas:** WCAG 2.1, Nivel AA/AAA (Criterios 1.1.1, 1.3.1, 2.4.1, 2.4.7, 3.1.1, 3.1.2, 3.1.3, 4.1.3).
+
+---
+
+## Principio 2: Operable (Ampliación) — Prevención de Riesgos Visuales (Flash Effect)
+
+> *Los componentes de la interfaz de usuario y la navegación deben ser operables y no deben causar daños a la salud (ej. convulsiones).*
+
+### Umbral de tres destellos y mitigación de fatiga (Criterios 2.3.1 y 2.3.3)
+
+**Problema:** Al cambiar de idioma, la aplicación realiza un re-renderizado global masivo. Para mitigar el parpadeo abrupto del DOM, se incluyó una transición de pantalla blanca de 600ms, pero este color luminoso resultaba perjudicial para personas con fotofobia, astigmatismo o sensibilidad visual en entornos oscuros.
+
+**Solución:** Se integró un control dentro del **Widget de Accesibilidad** que permite personalizar el `Efecto de Transición`, ofreciendo dos alternativas:
+- **Flash Blanco (Luminoso):** Comportamiento original.
+- **Flash Oscuro (Tenue):** Emplea una capa `#000` (negra), evitando deslumbramientos y mitigando la fatiga lumínica.
+
+**Archivo Modificado:** `src/shared/components/AccessibilityWidget.tsx` y `src/index.css` (Clase `.a11y-lang-flash-dark`).
+
+### Evidencia ODS 3: Salud y Bienestar
+
+Esta implementación protege activamente la **salud visual y neurológica** del usuario. Garantiza que la interfaz no desencadene migrañas ni malestar lumínico, permitiendo una experiencia de usuario segura y confortable, promoviendo el bienestar digital.
