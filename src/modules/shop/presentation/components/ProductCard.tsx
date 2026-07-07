@@ -82,7 +82,10 @@ export default function ProductCard({ product, categoryName }: ProductCardProps)
 
         {categoryName && (
           <Chip size="sm" variant="flat" className="absolute top-3 left-3 z-[2] bg-black/70 backdrop-blur-sm text-foreground text-xs font-semibold">
-            {categoryName}
+            {(() => {
+              const translated = t(`cat.${categoryName}`);
+              return translated.startsWith('cat.') ? categoryName : translated;
+            })()}
           </Chip>
         )}
 
@@ -98,7 +101,12 @@ export default function ProductCard({ product, categoryName }: ProductCardProps)
       </div>
 
       <CardBody className="p-4 gap-2">
-        <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-snug">{product.name}</h3>
+        <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-snug">
+          {(() => {
+            const translated = t(`prod.${product.name}`);
+            return translated.startsWith('prod.') ? product.name : translated;
+          })()}
+        </h3>
         {(colors.length > 0 || sizes.length > 0) && (
           <p className="text-xs text-default-400 line-clamp-1">
             {sizes.length > 0 && sizes.join(' / ')}

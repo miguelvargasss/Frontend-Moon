@@ -110,6 +110,8 @@ export const qu: Record<string, string> = {
   // ── Modos de color ──
   'color.normal': 'Normal',
   'color.normalDesc': 'Paqarin llimp\'ikuna',
+  'color.lightMode': 'Llimphu Modu',
+  'color.lightModeDesc': 'Yuraq pampa, yana qillqa',
   'color.highContrast': 'Hatun t\'inkiy',
   'color.highContrastDesc': 'Pisilla rikuqkunapaq',
   'color.grayscale': 'Yana-yuraq',
@@ -125,4 +127,19 @@ export const qu: Record<string, string> = {
   'size.normal': 'Normal',
   'size.large': 'Hatun',
   'size.veryLarge': 'Ancha hatun',
+  // ── Categorías Dinámicas ──
+  'cat.Moda': 'P\'achakuna',
+  'cat.Cocina': 'Wayk\'una',
+  'cat.Regalos Personalizados': 'Sapaq Suñaykuna',
+  'cat.Accesorios': 'Yanapaqkuna',
+  'cat.Joyería': 'Quri Qullqi',
+  'cat.Hogar': 'Wasi',
+  'cat.Libros y Accesorios Lectura': 'Qillqakuna',
+  'cat.Arte': 'Llimphi',
+  // ── Productos Dinámicos ──
+  'prod.Polos Frases Divertidas': 'Asichikuq Polokuna',
+  'prod.Lampara de Lava': 'Lava K\'anchay',
+  'prod.Mochila': 'Q\'ipina',
+  'prod.Taza': 'Upyana Taza',
+  'prod.Delantal gato chef': 'Misi Wayk\'uq Pacha',
 };

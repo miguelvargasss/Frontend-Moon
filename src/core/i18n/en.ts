@@ -109,6 +109,8 @@ export const en: Record<string, string> = {
   // ── Color modes ──
   'color.normal': 'Normal',
   'color.normalDesc': 'Original colors',
+  'color.lightMode': 'Light Mode',
+  'color.lightModeDesc': 'White background, dark text',
   'color.highContrast': 'High contrast',
   'color.highContrastDesc': 'For low vision',
   'color.grayscale': 'Grayscale',
@@ -124,4 +126,19 @@ export const en: Record<string, string> = {
   'size.normal': 'Normal',
   'size.large': 'Large',
   'size.veryLarge': 'Very large',
+  // ── Categorías Dinámicas ──
+  'cat.Moda': 'Fashion',
+  'cat.Cocina': 'Kitchen',
+  'cat.Regalos Personalizados': 'Custom Gifts',
+  'cat.Accesorios': 'Accessories',
+  'cat.Joyería': 'Jewelry',
+  'cat.Hogar': 'Home',
+  'cat.Libros y Accesorios Lectura': 'Books & Reading',
+  'cat.Arte': 'Art',
+  // ── Productos Dinámicos ──
+  'prod.Polos Frases Divertidas': 'Funny Quotes T-Shirts',
+  'prod.Lampara de Lava': 'Lava Lamp',
+  'prod.Mochila': 'Backpack',
+  'prod.Taza': 'Mug',
+  'prod.Delantal gato chef': 'Chef Cat Apron',
 };

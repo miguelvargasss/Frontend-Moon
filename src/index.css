@@ -82,6 +82,29 @@ body {
   outline-offset: 4px !important;
 }
 
+/* ── Accesibilidad: Modo Claro ───────────────────────────────────────
+   Activa cuando el AccessibilityWidget añade la clase .a11y-modo-claro.
+   Invierte la paleta oscura actual usando filtros.
+   ──────────────────────────────────────────────────────────────────── */
+.a11y-modo-claro {
+  background-color: #fff !important;
+  color: #000 !important;
+  filter: invert(1) hue-rotate(180deg);
+}
+
+.a11y-modo-claro img,
+.a11y-modo-claro video,
+.a11y-modo-claro svg,
+.a11y-modo-claro .loader-moon,
+.a11y-modo-claro [class*="hero-stars"] {
+  filter: invert(1) hue-rotate(180deg); /* Invierte de nuevo para preservar colores originales */
+}
+
+/* El widget en sí no debería invertirse internamente si se ve feo, pero por ahora lo invertimos todo */
+.a11y-modo-claro .a11y-lang-flash-dark {
+  filter: invert(1);
+}
+
 /* ── Loader (used by Suspense fallback) ──────────────────────────── */
 .loader-moon {
   width: 48px;

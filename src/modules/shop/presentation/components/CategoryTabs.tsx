@@ -63,7 +63,10 @@ export default function CategoryTabs({
             onClick={() => onSelect(cat.id)}
             id={`category-tab-${cat.id}`}
           >
-            {cat.name} ({countByCategory(cat.id)})
+            {(() => {
+              const translated = t(`cat.${cat.name}`);
+              return translated.startsWith('cat.') ? cat.name : translated;
+            })()} ({countByCategory(cat.id)})
           </Chip>
         ))}
       </div>

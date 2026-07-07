@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLanguage, type Language } from '../../core/i18n/i18n';
 
 // ── Tipos ──────────────────────────────────────────────────────────────
-type ColorMode = 'normal' | 'alto-contraste' | 'deuteranopia' | 'protanopia' | 'tritanopia' | 'escala-grises';
+type ColorMode = 'normal' | 'modo-claro' | 'alto-contraste' | 'deuteranopia' | 'protanopia' | 'tritanopia' | 'escala-grises';
 type FontSize   = 'normal' | 'grande' | 'muy-grande';
 
 interface A11yPreferences {
@@ -22,6 +22,7 @@ const DEFAULT_PREFS: A11yPreferences = {
 // ── Configuración de modos de color ────────────────────────────────────
 const COLOR_MODES: { id: ColorMode; labelKey: string; descKey: string; swatch: string }[] = [
   { id: 'normal',         labelKey: 'color.normal',        descKey: 'color.normalDesc',        swatch: 'linear-gradient(135deg,#99f6e4,#0A0F1E)' },
+  { id: 'modo-claro',     labelKey: 'color.lightMode',     descKey: 'color.lightModeDesc',     swatch: 'linear-gradient(135deg,#ffffff,#e2e8f0)' },
   { id: 'alto-contraste', labelKey: 'color.highContrast',  descKey: 'color.highContrastDesc',  swatch: 'linear-gradient(135deg,#fff700,#000)' },
   { id: 'escala-grises',  labelKey: 'color.grayscale',     descKey: 'color.grayscaleDesc',     swatch: 'linear-gradient(135deg,#fff,#555)' },
   { id: 'deuteranopia',   labelKey: 'color.deuteranopia',  descKey: 'color.deuteranopiaDesc',  swatch: 'linear-gradient(135deg,#5b92ff,#a67c00)' },
@@ -78,7 +79,7 @@ function applyPreferences(prefs: A11yPreferences) {
   const root = document.documentElement;
 
   // Limpia clases previas
-  root.classList.remove('a11y-alto-contraste');
+  root.classList.remove('a11y-alto-contraste', 'a11y-modo-claro');
 
   // Font size en el elemento raíz
   const fontMap: Record<FontSize, string> = {
@@ -91,6 +92,7 @@ function applyPreferences(prefs: A11yPreferences) {
   // Filtros CSS de color
   const filterMap: Record<ColorMode, string> = {
     'normal':         'none',
+    'modo-claro':     'none',
     'alto-contraste': 'none',
     'escala-grises':  'grayscale(100%)',
     'deuteranopia':   'url(#filter-deuteranopia)',
@@ -99,9 +101,11 @@ function applyPreferences(prefs: A11yPreferences) {
   };
   document.body.style.filter = filterMap[prefs.colorMode];
 
-  // Alto contraste: clase especial en el <html>
+  // Alto contraste y Modo Claro: clase especial en el <html>
   if (prefs.colorMode === 'alto-contraste') {
     root.classList.add('a11y-alto-contraste');
+  } else if (prefs.colorMode === 'modo-claro') {
+    root.classList.add('a11y-modo-claro');
   }
 }
 
